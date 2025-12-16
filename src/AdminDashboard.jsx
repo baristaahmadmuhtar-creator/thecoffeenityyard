@@ -1,10 +1,10 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { db } from './firebase'; 
-import { collection, onSnapshot, doc, updateDoc, deleteDoc, setDoc, arrayUnion, arrayRemove, getDocs } from 'firebase/firestore';
+import { collection, onSnapshot, doc, updateDoc, deleteDoc, setDoc, arrayUnion, arrayRemove } from 'firebase/firestore';
 import { 
     Edit, Save, X, Trash2, Plus, Loader2, Search, 
     LayoutGrid, List, Package, AlertTriangle, CheckCircle, 
-    Minus, Ban, Tags, Layers, Download
+    Minus, Ban, Tags, Layers
 } from 'lucide-react'; 
 import toast from 'react-hot-toast';
 
@@ -53,13 +53,14 @@ export const AdminDashboard = () => {
   const [viewMode, setViewMode] = useState('grid'); 
   const [searchTerm, setSearchTerm] = useState("");
   const [filterCategory, setFilterCategory] = useState("All");
-   
+  
   const [newCategoryName, setNewCategoryName] = useState("");
   const [showCatManager, setShowCatManager] = useState(false);
 
   const [editingId, setEditingId] = useState(null);
   const [isCreating, setIsCreating] = useState(false);
-   
+  
+  // UPDATE STATE: Tambah allowDuplicate
   const [formData, setFormData] = useState({
       name: '', description: '', 
       originalPrice: '', price: '', 
@@ -67,13 +68,12 @@ export const AdminDashboard = () => {
       image: '', badge: '', minQty: 1, unit: 'Set', 
       isAvailable: true, options: '', mixLimit: '',
       prepTime: 24,
-      allowDuplicate: true 
+      allowDuplicate: true // Default True (Pakai +/-)
   });
 
   const formatBND = (amount) => new Intl.NumberFormat('en-BN', { style: 'currency', currency: 'BND' }).format(Number(amount) || 0);
 
   useEffect(() => {
-    // Perhatikan: Collection name di sini adalah "menu" (sesuai kode kamu sebelumnya)
     const unsubMenu = onSnapshot(collection(db, "menu"), (snapshot) => {
       const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       data.sort((a, b) => {
@@ -120,60 +120,11 @@ export const AdminDashboard = () => {
       }
   }, [menu]);
 
-  // --- EXPORT FUNCTION (BARU) ---
-  const handleExportToCode = async () => {
-    try {
-      const querySnapshot = await getDocs(collection(db, "menu"));
-      const items = querySnapshot.docs.map(doc => {
-        const data = doc.data();
-        return {
-          id: doc.id,
-          name: data.name,
-          description: data.description,
-          originalPrice: parseFloat(data.originalPrice || 0),
-          price: parseFloat(data.price || 0),
-          category: data.category,
-          image: data.image,
-          badge: data.badge || "",
-          minQty: parseInt(data.minQty || 1),
-          unit: data.unit || "Set",
-          mixLimit: data.mixLimit ? parseInt(data.mixLimit) : null,
-          prepTime: parseInt(data.prepTime || 24),
-          allowDuplicate: data.allowDuplicate !== false, // Default true
-          ...(data.options ? { options: data.options } : {})
-        };
-      });
-
-      // Categories diambil dari state saat ini
-      const fileContent = `
-export const CATEGORIES = ${JSON.stringify(["All", ...categories], null, 2)};
-
-export const MENU_ITEMS = ${JSON.stringify(items, null, 2)};
-      `.trim();
-
-      const blob = new Blob([fileContent], { type: "text/javascript" });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = "menuData.js";
-      document.body.appendChild(link);
-      link.click();
-      
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-
-      toast.success("Backup downloaded as menuData.js!");
-    } catch (error) {
-      console.error("Export failed:", error);
-      toast.error("Failed to export data.");
-    }
-  };
-
   const handleAddCategory = async (e) => {
       e.preventDefault();
       if(!newCategoryName.trim()) return;
       const catName = newCategoryName.trim();
-       
+      
       try {
           const catRef = doc(db, "settings", "categories");
           await updateDoc(catRef, {
@@ -222,7 +173,7 @@ export const MENU_ITEMS = ${JSON.stringify(items, null, 2)};
       mixLimit: item.mixLimit || '',
       options: item.options && item.options.choices ? item.options.choices.join(', ') : '',
       prepTime: item.prepTime !== undefined ? item.prepTime : 24,
-      allowDuplicate: item.allowDuplicate !== false 
+      allowDuplicate: item.allowDuplicate !== false // Default true jika undefined
     });
   };
 
@@ -245,7 +196,7 @@ export const MENU_ITEMS = ${JSON.stringify(items, null, 2)};
 
   const handleSubmit = async (e) => {
       e.preventDefault();
-       
+      
       const payload = {
           ...formData,
           price: Number(formData.price),
@@ -255,7 +206,7 @@ export const MENU_ITEMS = ${JSON.stringify(items, null, 2)};
           mixLimit: formData.mixLimit ? Number(formData.mixLimit) : null,
           options: processOptions(formData.options),
           prepTime: Number(formData.prepTime),
-          allowDuplicate: formData.allowDuplicate,
+          allowDuplicate: formData.allowDuplicate, // Simpan ke DB
           updatedAt: new Date()
       };
 
@@ -304,12 +255,7 @@ export const MENU_ITEMS = ${JSON.stringify(items, null, 2)};
                 <h1 className="text-3xl font-black text-slate-900 tracking-tight">Dashboard</h1>
                 <p className="text-slate-500 font-medium">Manage your inventory & pricing.</p>
             </div>
-            <div className="flex flex-wrap gap-2">
-                {/* BUTTON EXPORT BARU */}
-                <button onClick={handleExportToCode} className="px-4 py-3 bg-green-600 text-white font-bold rounded-xl hover:bg-green-700 transition flex items-center gap-2 shadow-sm">
-                    <Download size={20}/> Export JS
-                </button>
-
+            <div className="flex gap-2">
                 <button onClick={() => setShowCatManager(!showCatManager)} className="px-4 py-3 bg-white text-slate-700 font-bold rounded-xl border border-slate-200 hover:bg-slate-50 transition flex items-center gap-2 shadow-sm">
                     <Tags size={20}/> Categories
                 </button>
@@ -326,7 +272,7 @@ export const MENU_ITEMS = ${JSON.stringify(items, null, 2)};
                     <h3 className="font-bold text-lg text-slate-800 flex items-center gap-2"><Tags className="text-amber-500"/> Manage Categories</h3>
                     <button onClick={() => setShowCatManager(false)} className="text-slate-400 hover:text-red-500"><X size={20}/></button>
                 </div>
-                 
+                
                 <div className="flex flex-wrap gap-2 mb-6">
                     {categories.map(cat => (
                         <div key={cat} className="pl-4 pr-2 py-1.5 bg-slate-100 rounded-full flex items-center gap-2 text-sm font-bold text-slate-700">
@@ -335,7 +281,7 @@ export const MENU_ITEMS = ${JSON.stringify(items, null, 2)};
                         </div>
                     ))}
                 </div>
-                 
+                
                 <form onSubmit={handleAddCategory} className="flex gap-2">
                     <input 
                         type="text" 
@@ -397,7 +343,7 @@ export const MENU_ITEMS = ${JSON.stringify(items, null, 2)};
                                 </div>
                             )}
                         </div>
-                         
+                        
                         <div className="p-5 flex-grow flex flex-col">
                             <div className="flex justify-between items-start mb-2">
                                 <h3 className="font-bold text-slate-800 line-clamp-1" title={item.name}>{item.name}</h3>
@@ -527,7 +473,7 @@ export const MENU_ITEMS = ${JSON.stringify(items, null, 2)};
                         <Input label="Prep Time (Hours)" type="number" value={formData.prepTime} onChange={e => setFormData({...formData, prepTime: e.target.value})} placeholder="24"/>
                     </div>
                     
-                    {/* MIX SETTINGS */}
+                    {/* MIX SETTINGS - UPDATE DISINI */}
                     <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-4">
                         <div className="flex items-center gap-2 mb-2">
                             <Layers size={18} className="text-amber-500"/>
