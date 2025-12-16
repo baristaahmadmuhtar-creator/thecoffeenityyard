@@ -4,8 +4,8 @@ import { Toaster } from 'react-hot-toast';
 import { CartProvider } from './context/CartContext';
 import { HelmetProvider, Helmet } from 'react-helmet-async';
 import { Loader2 } from 'lucide-react';
+import { Analytics } from "@vercel/analytics/react";
 
-// --- LAZY LOAD COMPONENTS ---
 const AdminGuard = lazy(() => import('./AdminGuard').then(module => ({ default: module.AdminGuard })));
 const MigrateMenu = lazy(() => import('./MigrateMenu').then(module => ({ default: module.MigrateMenu })));
 const AIPlanner = lazy(() => import('./components/AIPlanner').then(module => ({ default: module.AIPlanner })));
@@ -22,8 +22,6 @@ const LoadingFallback = () => (
   </div>
 );
 
-// --- KOMPONEN TAMPILAN UTAMA (CUSTOMER) ---
-// Dipisahkan agar Navbar/Footer tidak bocor ke halaman Admin
 function CustomerLayout() {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isAIOpen, setIsAIOpen] = useState(false);
@@ -52,7 +50,6 @@ function CustomerLayout() {
         <p>&copy; {new Date().getFullYear()} The Coffeennity Yard. All rights reserved.</p>
       </footer>
 
-      {/* MODALS */}
       <CartDrawer 
         isOpen={isCartOpen} 
         onClose={() => setIsCartOpen(false)} 
@@ -71,19 +68,18 @@ function CustomerLayout() {
   );
 }
 
-// --- APP UTAMA ---
 function App() {
   return (
     <HelmetProvider>
       <CartProvider>
         <Toaster position="bottom-center" toastOptions={{ duration: 3000 }} />
         
+        <Analytics />
+
         <Suspense fallback={<LoadingFallback />}>
           <Routes>
-            {/* Route untuk Halaman Migrasi */}
             <Route path="/migrate" element={<MigrateMenu />} />
 
-            {/* Route untuk Admin Dashboard */}
             <Route path="/admin/*" element={
               <>
                 <Helmet>
@@ -94,7 +90,6 @@ function App() {
               </>
             } />
 
-            {/* Route Utama (Halaman Depan/Customer) */}
             <Route path="/*" element={<CustomerLayout />} />
           </Routes>
         </Suspense>
