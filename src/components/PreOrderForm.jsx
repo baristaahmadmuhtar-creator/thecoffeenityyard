@@ -299,13 +299,76 @@ export const PreOrderForm = ({ onClose }) => {
           minDateObj={minDateObj} 
       />
       
-      <TimePickerModal 
-          isOpen={modalOpen === 'time'} 
-          onClose={() => setModalOpen(null)} 
-          onSelect={(time) => setFormData({...formData, time})} 
-          initialTime={formData.time}
-          minTimeStr={formData.date === toYYYYMMDD(new Date()) ? minTimeForTodayStr : null}
-      />
-    </>
-  );
+      const TimePickerModal = ({ isOpen, onClose, onSelect, initialTime, minTimeStr }) => {
+    const [selectedTime, setSelectedTime] = useState(initialTime);
+    const timeInputRef = React.useRef(null); // Tambahkan ref
+
+    useEffect(() => {
+        if (isOpen && minTimeStr && (!initialTime || initialTime < minTimeStr)) {
+            setSelectedTime(minTimeStr);
+        }
+    }, [isOpen, minTimeStr, initialTime]);
+
+    const handleConfirm = () => {
+        if (!selectedTime) return;
+        const [h, m] = selectedTime.split(':').map(Number);
+        const mins = h * 60 + m;
+        
+        if (mins < 420 || mins > 1380) { 
+            toast.error("We are open from 07:00 AM to 11:00 PM.");
+            return;
+        }
+        if (minTimeStr) {
+            const [mh, mm] = minTimeStr.split(':').map(Number);
+            if (mins < mh * 60 + mm) {
+                toast.error(`Earliest pickup is ${formatTimeAMPM(minTimeStr)}`);
+                return;
+            }
+        }
+        onSelect(selectedTime);
+        onClose();
+    };
+
+    if (!isOpen) return null;
+
+    return (
+        <AnimatePresence>
+             <motion.div 
+                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                className="fixed inset-0 z-[110] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4"
+                onClick={onClose}
+            >
+                <motion.div 
+                    initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }}
+                    onClick={e => e.stopPropagation()}
+                    className="bg-white rounded-3xl p-6 w-full max-w-sm shadow-2xl"
+                >
+                    <h4 className="text-xl font-bold text-slate-900 mb-6 flex items-center gap-2">
+                        <Clock size={24} className="text-amber-500"/> Select Time
+                    </h4>
+                    
+                    {
+                    <div 
+                        className="bg-slate-50 rounded-2xl p-6 border border-slate-100 mb-4 cursor-pointer active:bg-slate-100"
+                        onClick={() => timeInputRef.current?.showPicker?.()} 
+                    >
+                        <input 
+                            ref={timeInputRef}
+                            type="time" 
+                            value={selectedTime} 
+                            onChange={(e) => setSelectedTime(e.target.value)} 
+                            className="w-full bg-transparent text-4xl font-bold text-center outline-none text-slate-900 cursor-pointer"
+                        />
+                    </div>
+                    
+                    <button 
+                        onClick={handleConfirm} 
+                        className="w-full py-4 bg-slate-900 text-white font-bold rounded-xl hover:bg-amber-600 transition-all shadow-lg"
+                    >
+                        Confirm Time
+                    </button>
+                </motion.div>
+            </motion.div>
+        </AnimatePresence>
+    );
 };
