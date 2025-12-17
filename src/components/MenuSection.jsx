@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { Plus, X, Check, Loader2, Ban, ShoppingBag, Tag, LayoutGrid, List, Minus } from 'lucide-react'; 
+import React, { useState, useEffect } from 'react';
+import { Plus, X, Check, Loader2, Ban, ShoppingBag, Tag, LayoutGrid, List } from 'lucide-react'; 
 import { motion, AnimatePresence } from 'framer-motion';
 import { useMenu } from '../hooks/useMenu'; 
 import { useCart } from '../context/CartContext';
@@ -7,29 +7,18 @@ import { MixModal } from './MixModal';
 import { doc, onSnapshot } from 'firebase/firestore'; 
 import { db } from '../firebase';
 
-// --- OPTION MODAL (STANDARD DENGAN QUANTITY) ---
+// --- OPTION MODAL (STANDARD - SINGLE SELECT) ---
 const OptionModal = ({ item, isOpen, onClose, onConfirm, onMixSelect }) => {
-    // State untuk pilihan dan jumlah (qty)
-    const [selected, setSelected] = useState('');
-    const [qty, setQty] = useState(1);
-
-    // Reset state setiap kali modal dibuka
-    useEffect(() => {
-        if (isOpen && item) {
-            setSelected(item.options?.choices[0] || '');
-            setQty(item.minQty || 1);
-        }
-    }, [isOpen, item]);
+    const [selected, setSelected] = useState(item?.options?.choices[0] || '');
 
     if (!isOpen || !item || !item.options || !item.options.choices) return null;
 
     const handleConfirm = () => {
-        // Fallback: Jika user memilih string 'mixed' (jika masih ada di data)
+        // Jika user memilih "Mixed" secara manual di mode Single Select
         if (selected.toLowerCase() === 'mixed' || selected.toLowerCase() === 'mix') {
             onMixSelect(item);
         } else {
-            // Kirim pilihan DAN jumlah ke fungsi confirm
-            onConfirm(selected, qty);
+            onConfirm(selected);
         }
     };
 
@@ -42,14 +31,13 @@ const OptionModal = ({ item, isOpen, onClose, onConfirm, onMixSelect }) => {
                 />
                 <motion.div 
                     initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9, y: 20 }}
-                    className="bg-white w-full max-w-sm rounded-2xl shadow-2xl z-10 overflow-hidden flex flex-col max-h-[90vh]"
+                    className="bg-white w-full max-w-sm rounded-2xl shadow-2xl z-10 overflow-hidden"
                 >
                     <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
                         <h3 className="font-bold text-slate-800">{item.options.title || 'Select Options'}</h3>
                         <button onClick={onClose}><X size={20} className="text-slate-400 hover:text-red-500"/></button>
                     </div>
-                    
-                    <div className="p-4 space-y-2 overflow-y-auto">
+                    <div className="p-4 space-y-2 max-h-[60vh] overflow-y-auto">
                         {item.options.choices.map((choice) => (
                             <div 
                                 key={choice}
@@ -65,36 +53,12 @@ const OptionModal = ({ item, isOpen, onClose, onConfirm, onMixSelect }) => {
                             </div>
                         ))}
                     </div>
-
-                    {/* FOOTER: QUANTITY & CONFIRM BUTTON */}
-                    <div className="p-4 border-t border-slate-100 bg-white space-y-3">
-                        {/* Tampilkan Quantity Selector jika bukan mode 'Mixed' */}
-                        {selected.toLowerCase() !== 'mixed' && selected.toLowerCase() !== 'mix' && (
-                            <div className="flex justify-between items-center bg-slate-50 p-2 rounded-xl border border-slate-100">
-                                <span className="text-xs font-bold text-slate-500 ml-2 uppercase">Quantity</span>
-                                <div className="flex items-center gap-3">
-                                    <button 
-                                        onClick={() => setQty(Math.max(item.minQty || 1, qty - 1))}
-                                        className="w-8 h-8 flex items-center justify-center rounded-lg bg-white border border-slate-200 text-slate-600 active:bg-slate-100 hover:text-red-500 transition-colors"
-                                    >
-                                        <Minus size={16} />
-                                    </button>
-                                    <span className="text-lg font-bold text-slate-900 w-6 text-center">{qty}</span>
-                                    <button 
-                                        onClick={() => setQty(qty + 1)}
-                                        className="w-8 h-8 flex items-center justify-center rounded-lg bg-white border border-slate-200 text-slate-600 active:bg-slate-100 hover:text-green-600 transition-colors"
-                                    >
-                                        <Plus size={16} />
-                                    </button>
-                                </div>
-                            </div>
-                        )}
-
+                    <div className="p-4 border-t border-slate-100">
                         <button 
                             onClick={handleConfirm}
                             className="w-full py-3 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-xl shadow-lg shadow-amber-500/20 transition-all active:scale-95"
                         >
-                            {selected.toLowerCase() === 'mixed' || selected.toLowerCase() === 'mix' ? 'Continue to Mix' : 'Add to Tray'}
+                            {selected.toLowerCase() === 'mixed' ? 'Continue to Mix' : 'Confirm Selection'}
                         </button>
                     </div>
                 </motion.div>
@@ -132,28 +96,30 @@ export const MenuSection = () => {
       return match ? parseFloat(match[1]) : defaultPrice;
   };
 
+  // --- LOGIKA UTAMA YANG DIPERBARUI ---
   const handleAddToCartClick = (item) => {
       if (item.stock <= 0 || item.isAvailable === false) return; 
       
       if (item.options) {
-          // UPDATE: Logic Branching
-          // Jika 'Allow Duplicate' aktif, LANGSUNG buka MixModal (Custom Mix)
-          // meskipun tidak ada varian bernama "Mixed".
+          // JIKA Allow Duplicate AKTIF -> Langsung buka MixModal (Counter - +)
+          // Tidak peduli apakah ada opsi "Mixed" atau tidak di list options
           if (item.allowDuplicate) {
               setMixModalItem(item);
-          } else {
+          } 
+          // JIKA TIDAK -> Buka Modal Pilihan Biasa (Single Select)
+          else {
               setModalItem(item);
           }
       } else {
+          // Langsung tambah ke cart jika tidak ada options
           addToCart(item, item.minQty || 1); 
       }
   };
 
-  const handleConfirmOption = (choice, quantity) => {
+  const handleConfirmOption = (choice) => {
       if (modalItem) {
           const price = getPriceFromOption(choice, modalItem.price);
-          // UPDATE: Menggunakan quantity dari modal
-          addToCart(modalItem, quantity || modalItem.minQty || 1, choice, price); 
+          addToCart(modalItem, modalItem.minQty || 1, choice, price); 
           setModalItem(null);
       }
   };
@@ -165,8 +131,6 @@ export const MenuSection = () => {
 
   const handleConfirmMix = (selectedVariants) => {
       if (mixModalItem) {
-          // UPDATE: Logic untuk format string (support duplicate)
-          // Contoh: "2x Margherita, 1x Pepperoni"
           const counts = {};
           selectedVariants.forEach(v => { counts[v] = (counts[v] || 0) + 1; });
           
@@ -406,8 +370,7 @@ export const MenuSection = () => {
                           {isOutOfStock ? (
                               <> <Ban size={14} /> <span className="hidden xs:inline">Out of Stock</span> </>
                           ) : (
-                              // Tombol akan berubah teksnya tergantung setting allowDuplicate
-                              <> <Plus size={16} /> {item.options ? (item.allowDuplicate ? "Custom Mix" : "Select") : "Add"} </>
+                              <> <Plus size={16} /> {item.options ? "Select" : "Add"} </>
                           )}
                         </button>
                       </div>
