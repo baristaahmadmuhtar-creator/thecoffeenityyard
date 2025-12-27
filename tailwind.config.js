@@ -14,7 +14,8 @@ export default {
         'almond-silk': '#F8DACE',
       },
       fontFamily: {
-        sans: ['"BBH Hegarty"', 'sans-serif'],
+        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+        heading: ['"DM Serif Display"', 'serif'],
       },
     },
   },

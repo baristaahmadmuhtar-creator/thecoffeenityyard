@@ -55,7 +55,7 @@ export const BulkInfoModal = ({ isOpen, onClose }) => {
           {/* Header */}
           <div className="p-6 border-b border-old-lace flex justify-between items-start bg-old-lace sticky top-0 z-20">
             <div>
-              <h3 className="text-xl md:text-2xl font-black text-slate-900 leading-tight bbh-hegarty-regular">What is Coffeenityyard Bulk Order?</h3>
+              <h3 className="text-xl md:text-2xl font-black text-slate-900 leading-tight font-heading">What is Coffeenityyard Bulk Order?</h3>
               <p className="text-slate-500 text-sm mt-1 font-medium">Centralized • Organized • Cost-Efficient</p>
             </div>
             <button onClick={onClose} className="p-2 bg-white rounded-full text-slate-400 hover:text-slate-900 hover:bg-slate-200 transition shadow-sm border border-slate-100">
@@ -75,7 +75,7 @@ export const BulkInfoModal = ({ isOpen, onClose }) => {
             </div>
 
             <div>
-              <h4 className="text-lg font-black text-slate-900 mb-5 flex items-center gap-2 bbh-hegarty-regular">
+              <h4 className="text-lg font-black text-slate-900 mb-5 flex items-center gap-2 font-heading">
                 <Star className="text-flag-red fill-flag-red" size={20}/> Why Order in Bulk with Coffeenityyard?
               </h4>
               <div className="grid md:grid-cols-2 gap-4">

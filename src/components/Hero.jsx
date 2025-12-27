@@ -40,7 +40,7 @@ export const Hero = ({ openAI, openBulkInfo }) => {
                 </span>
             </motion.div>
 
-            <h1 className="text-5xl md:text-7xl lg:text-8xl font-black leading-tight tracking-tighter text-slate-900 mb-6 bbh-hegarty-regular">
+            <h1 className="text-5xl md:text-7xl lg:text-8xl font-heading font-normal leading-tight tracking-tight text-slate-900 mb-6">
                 ELEVATE YOUR <br className="hidden md:block"/>
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-flag-red to-tomato-jam">
                 EVENTS & GATHERINGS.
@@ -67,7 +67,7 @@ export const Hero = ({ openAI, openBulkInfo }) => {
                 <div className="w-14 h-14 bg-old-lace border border-almond-silk rounded-2xl flex items-center justify-center mb-6 shadow-sm group-hover:bg-white group-hover:scale-110 transition-all duration-300">
                   <Info className="text-slate-700" size={28}/>
                 </div>
-                <h3 className="text-2xl font-black text-slate-900 mb-2 group-hover:text-flag-red transition-colors bbh-hegarty-regular">What is Bulk Order?</h3>
+                <h3 className="text-3xl font-heading text-slate-900 mb-2 group-hover:text-flag-red transition-colors">What is Bulk Order?</h3>
                 <p className="text-sm md:text-base text-slate-500 font-medium leading-relaxed">
                   Coffeenityyard Bulk Order is a centralized platform designed for large quantity orders—simple, organized, and cost-efficient.
                 </p>
@@ -89,7 +89,7 @@ export const Hero = ({ openAI, openBulkInfo }) => {
                 <div className="w-14 h-14 bg-white/10 backdrop-blur-md rounded-2xl flex items-center justify-center mb-6 border border-white/10 group-hover:scale-110 transition-transform duration-300">
                   <Sparkles className="text-almond-silk" size={28}/>
                 </div>
-                <h3 className="text-2xl font-black text-white mb-2 flex flex-wrap items-center gap-2 bbh-hegarty-regular">
+                <h3 className="text-3xl font-heading text-white mb-2 flex flex-wrap items-center gap-2">
                   Create Menu with AI
                   <span className="bg-flag-red text-white text-[10px] px-2 py-0.5 rounded-md uppercase tracking-wide font-extrabold font-sans">Beta</span>
                 </h3>

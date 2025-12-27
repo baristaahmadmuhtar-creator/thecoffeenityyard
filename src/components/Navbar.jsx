@@ -28,10 +28,10 @@ export const Navbar = ({ openCart, openAI, openBulkInfo }) => {
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           className="
-            font-black tracking-tight cursor-pointer select-none
-            text-base sm:text-xl md:text-2xl lg:text-3xl
+            font-heading font-normal tracking-wide cursor-pointer select-none
+            text-lg sm:text-2xl md:text-3xl lg:text-4xl
             flex items-center gap-1 text-slate-900
-            whitespace-nowrap bbh-hegarty-regular
+            whitespace-nowrap
           "
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
         >

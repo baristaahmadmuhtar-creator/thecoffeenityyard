@@ -59,7 +59,7 @@ export const MixModal = ({ isOpen, onClose, onConfirm, baseItem, variants, limit
                 >
                     <div className="p-5 border-b border-old-lace flex justify-between items-center bg-old-lace">
                         <div>
-                            <h3 className="font-bold text-slate-800 text-lg bbh-hegarty-regular">Customize Bundle</h3>
+                            <h3 className="font-bold text-slate-800 text-lg font-heading">Customize Bundle</h3>
                             <p className="text-xs text-slate-500">Select exactly {limit} items</p>
                         </div>
                         <button onClick={onClose} className="p-1 rounded-full hover:bg-slate-200">

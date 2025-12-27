@@ -72,7 +72,7 @@ export const AdminGuard = () => {
         return (
             <>
                 <div className="flex justify-between p-4 bg-old-lace border-b border-almond-silk">
-                    <span className="text-lg font-black text-slate-700 bbh-hegarty-regular">THE COFFEENITY YARD - ADMIN</span>
+                    <span className="text-lg font-black text-slate-700 font-heading">THE COFFEENITY YARD - ADMIN</span>
                     <button onClick={handleLogout} className="text-sm text-red-600 hover:text-red-700 font-bold bg-white px-3 py-1 rounded-lg shadow-sm transition">
                         Logout ({user.email})
                     </button>
@@ -86,7 +86,7 @@ export const AdminGuard = () => {
     return (
         <div className="min-h-screen flex items-center justify-center bg-old-lace">
             <form onSubmit={handleLogin} className="p-8 bg-white shadow-2xl rounded-xl w-full max-w-sm space-y-6 border border-gray-100">
-                <h2 className="text-3xl font-black text-slate-900 text-center bbh-hegarty-regular">🔐 Admin Login</h2>
+                <h2 className="text-3xl font-black text-slate-900 text-center font-heading">🔐 Admin Login</h2>
                 {error && <p className="text-red-600 bg-red-50 p-3 rounded-lg text-sm font-medium text-center border border-red-200">{error}</p>}
                 
                 <input

@@ -26,7 +26,7 @@ export const CartDrawer = ({ isOpen, onClose, onCheckout }) => {
             {/* Header */}
             <div className="p-6 border-b border-old-lace flex justify-between items-center bg-white z-10">
               <div>
-                 <h2 className="text-2xl font-black text-slate-900 flex items-center gap-3 bbh-hegarty-regular">
+                 <h2 className="text-2xl font-heading text-slate-900 flex items-center gap-3">
                     Your Tray <span className="text-flag-red text-sm font-bold bg-almond-silk px-3 py-1 rounded-full flex items-center gap-1 font-sans"><Package size={14}/> {cartCount} Items</span>
                  </h2>
                  <p className="text-slate-500 text-sm mt-1">Review your bulk order items.</p>
@@ -44,7 +44,7 @@ export const CartDrawer = ({ isOpen, onClose, onCheckout }) => {
                     <ShoppingBag className="w-12 h-12 text-almond-silk" />
                   </div>
                   <div className="text-center">
-                      <p className="text-xl font-bold text-slate-700 bbh-hegarty-regular">Your tray is empty.</p>
+                      <p className="text-xl font-heading text-slate-700">Your tray is empty.</p>
                       <p className="text-slate-500 text-sm mt-2">Looks like you haven't added anything yet.</p>
                   </div>
                   <button onClick={onClose} className="px-6 py-3 bg-white border-2 border-flag-red text-flag-red font-bold rounded-xl hover:bg-flag-red hover:text-white transition-all shadow-sm">Browse Our Menu</button>
@@ -94,7 +94,7 @@ export const CartDrawer = ({ isOpen, onClose, onCheckout }) => {
                  <span className="text-slate-900 font-bold text-lg">{formatBND(cartTotal)}</span>
               </div>
               <div className="flex justify-between items-center mb-6 pb-4 border-b border-old-lace">
-                <span className="text-slate-900 font-bold text-xl bbh-hegarty-regular">Grand Total</span>
+                <span className="text-slate-900 font-heading text-xl">Grand Total</span>
                 <span className="text-flag-red font-black text-3xl">{formatBND(cartTotal)}</span>
               </div>
               

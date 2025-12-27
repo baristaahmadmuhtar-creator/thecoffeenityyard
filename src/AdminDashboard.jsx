@@ -302,7 +302,7 @@ export const MENU_ITEMS = ${JSON.stringify(items, null, 2)};
         {/* HEADER */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div>
-                <h1 className="text-3xl font-black text-slate-900 tracking-tight bbh-hegarty-regular">Dashboard</h1>
+                <h1 className="text-3xl font-black text-slate-900 tracking-tight font-heading">Dashboard</h1>
                 <p className="text-slate-500 font-medium">Manage your inventory & pricing.</p>
             </div>
             <div className="flex flex-wrap gap-2">
@@ -324,7 +324,7 @@ export const MENU_ITEMS = ${JSON.stringify(items, null, 2)};
         {showCatManager && (
             <div className="bg-white p-6 rounded-2xl shadow-sm border border-almond-silk animate-in slide-in-from-top-4">
                 <div className="flex justify-between items-center mb-4">
-                    <h3 className="font-bold text-lg text-slate-800 flex items-center gap-2 bbh-hegarty-regular"><Tags className="text-flag-red"/> Manage Categories</h3>
+                    <h3 className="font-bold text-lg text-slate-800 flex items-center gap-2 font-heading"><Tags className="text-flag-red"/> Manage Categories</h3>
                     <button onClick={() => setShowCatManager(false)} className="text-slate-400 hover:text-red-500"><X size={20}/></button>
                 </div>
                  
@@ -491,7 +491,7 @@ export const MENU_ITEMS = ${JSON.stringify(items, null, 2)};
                  
                  <div className="flex items-center gap-3 mb-6">
                     {editingId && <div className="px-3 py-1 bg-almond-silk text-flag-red text-xs font-bold rounded-full">Editing Mode</div>}
-                    <h2 className="text-2xl font-black text-slate-900 bbh-hegarty-regular">{isCreating ? 'Add New Product' : 'Edit Product'}</h2>
+                    <h2 className="text-2xl font-black text-slate-900 font-heading">{isCreating ? 'Add New Product' : 'Edit Product'}</h2>
                  </div>
                  
                  <div className="space-y-6">

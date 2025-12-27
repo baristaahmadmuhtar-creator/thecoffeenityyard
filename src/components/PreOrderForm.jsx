@@ -73,7 +73,7 @@ const DatePickerModal = ({ isOpen, onClose, onSelect, initialDate, minDateObj })
                     className="bg-white rounded-3xl p-6 w-full max-w-sm shadow-2xl border border-almond-silk"
                 >
                     <div className="flex justify-between items-center mb-6">
-                        <h4 className="text-xl font-bold text-slate-900 flex items-center gap-2 bbh-hegarty-regular">
+                        <h4 className="text-xl font-bold text-slate-900 flex items-center gap-2 font-heading">
                             <Calendar size={24} className="text-flag-red"/> Select Date
                         </h4>
                         <div className="flex gap-1">
@@ -160,7 +160,7 @@ const TimePickerModal = ({ isOpen, onClose, onSelect, initialTime, minTimeStr })
                     onClick={e => e.stopPropagation()}
                     className="bg-white rounded-3xl p-6 w-full max-w-sm shadow-2xl"
                 >
-                    <h4 className="text-xl font-bold text-slate-900 mb-6 flex items-center gap-2 bbh-hegarty-regular"><Clock size={24} className="text-flag-red"/> Select Time</h4>
+                    <h4 className="text-xl font-bold text-slate-900 mb-6 flex items-center gap-2 font-heading"><Clock size={24} className="text-flag-red"/> Select Time</h4>
                     <div className="bg-old-lace rounded-2xl p-6 border border-almond-silk mb-4">
                         <input type="time" value={selectedTime} onChange={(e) => setSelectedTime(e.target.value)} className="w-full bg-transparent text-4xl font-bold text-center outline-none text-slate-900 font-sans"/>
                     </div>
@@ -243,7 +243,7 @@ export const PreOrderForm = ({ onClose }) => {
           >
             <div className="p-6 border-b border-old-lace flex justify-between items-center">
               <div>
-                  <h3 className="text-2xl font-black text-slate-900 flex items-center gap-2 bbh-hegarty-regular"><ClipboardList className="text-flag-red"/> Checkout</h3>
+                  <h3 className="text-2xl font-black text-slate-900 flex items-center gap-2 font-heading"><ClipboardList className="text-flag-red"/> Checkout</h3>
                   <p className="text-slate-500 text-sm">Finalize your order.</p>
               </div>
               <button onClick={onClose} className="p-2 rounded-full bg-old-lace hover:bg-almond-silk"><X size={24} className="text-slate-500"/></button>

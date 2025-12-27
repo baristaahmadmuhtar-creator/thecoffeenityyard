@@ -2,20 +2,18 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=BBH+Hegarty&display=swap');
-
 body {
   background-color: #FDF2E3; /* Old Lace */
   color: #0f172a; /* Slate-900 */
-  font-family: "BBH Hegarty", sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-.bbh-hegarty-regular {
-  font-family: "BBH Hegarty", sans-serif;
-  font-weight: 400;
-  font-style: normal;
+/* Custom class for headings */
+.font-heading {
+  font-family: "DM Serif Display", serif;
+  letter-spacing: 0.02em;
 }
 
 /* Smooth Scrolling */

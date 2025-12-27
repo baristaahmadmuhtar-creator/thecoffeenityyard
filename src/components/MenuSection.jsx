@@ -33,7 +33,7 @@ const OptionModal = ({ item, isOpen, onClose, onConfirm, onMixSelect }) => {
                     className="bg-white w-full max-w-sm rounded-2xl shadow-2xl z-10 overflow-hidden"
                 >
                     <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-old-lace">
-                        <h3 className="font-bold text-slate-800 bbh-hegarty-regular">{item.options.title || 'Select Options'}</h3>
+                        <h3 className="font-heading text-xl text-slate-800">{item.options.title || 'Select Options'}</h3>
                         <button onClick={onClose}><X size={20} className="text-slate-400 hover:text-flag-red"/></button>
                     </div>
                     <div className="p-4 space-y-2 max-h-[60vh] overflow-y-auto">
@@ -194,7 +194,7 @@ export const MenuSection = () => {
   if (errorMenu) {
       return (
           <section id="menu" className="py-24 bg-old-lace min-h-screen text-center">
-              <h2 className="text-4xl font-black text-red-600 mb-4 bbh-hegarty-regular">Connection Error</h2>
+              <h2 className="text-4xl font-heading text-red-600 mb-4">Connection Error</h2>
               <p className="text-lg text-slate-600">{errorMenu}</p>
           </section>
       );
@@ -208,7 +208,7 @@ export const MenuSection = () => {
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 md:mb-12 gap-6">
           
           <div className="flex items-center justify-between md:justify-start w-full md:w-auto">
-             <h2 className="text-3xl md:text-5xl font-black tracking-tight text-slate-900 bbh-hegarty-regular">OUR MENU</h2>
+             <h2 className="text-3xl md:text-5xl font-heading tracking-tight text-slate-900">OUR MENU</h2>
              <ViewToggleButton className="md:hidden" />
           </div>
           
@@ -267,8 +267,8 @@ export const MenuSection = () => {
                 const imageHeight = isGrid ? 'h-36 xs:h-40 md:h-48' : 'h-64 md:h-72';
                 const contentPadding = isGrid ? 'p-3.5' : 'p-5 md:p-6';
                 const titleSize = isGrid 
-                    ? 'text-sm font-bold leading-tight min-h-[2.5em] bbh-hegarty-regular' 
-                    : 'text-lg md:text-2xl font-black mb-1 bbh-hegarty-regular';
+                    ? 'text-sm font-bold leading-tight min-h-[2.5em]' 
+                    : 'text-lg md:text-2xl font-heading mb-1';
                 const priceSize = isGrid ? 'text-base' : 'text-xl md:text-2xl';
 
                 return (

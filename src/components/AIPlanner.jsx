@@ -177,7 +177,7 @@ export const AIPlanner = ({ onClose }) => {
                             <Sparkles className="text-flag-red" size={20}/> 
                         </div>
                         <div>
-                            <h3 className="text-lg font-black text-slate-900 tracking-tight bbh-hegarty-regular">YARD AI</h3>
+                            <h3 className="text-lg font-black text-slate-900 tracking-tight font-heading">YARD AI</h3>
                             <p className="text-xs text-slate-500 font-medium">Smart Catering Assistant</p>
                         </div>
                     </div>
