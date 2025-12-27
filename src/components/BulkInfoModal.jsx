@@ -50,22 +50,22 @@ export const BulkInfoModal = ({ isOpen, onClose }) => {
         {/* Modal Content */}
         <motion.div 
           initial={{ scale: 0.95, y: 20, opacity: 0 }} animate={{ scale: 1, y: 0, opacity: 1 }} exit={{ scale: 0.95, y: 20, opacity: 0 }}
-          className="bg-white w-full max-w-3xl rounded-3xl shadow-2xl relative z-10 flex flex-col max-h-[85vh] overflow-hidden border border-slate-100"
+          className="bg-old-lace w-full max-w-3xl rounded-3xl shadow-2xl relative z-10 flex flex-col max-h-[85vh] overflow-hidden border border-almond-silk"
         >
           {/* Header */}
-          <div className="p-6 border-b border-slate-100 flex justify-between items-start bg-slate-50 sticky top-0 z-20">
+          <div className="p-6 border-b border-almond-silk flex justify-between items-start bg-almond-silk/30 sticky top-0 z-20">
             <div>
-              <h3 className="text-xl md:text-2xl font-black text-slate-900 leading-tight">What is Coffeenityyard Bulk Order?</h3>
-              <p className="text-slate-500 text-sm mt-1 font-medium">Centralized • Organized • Cost-Efficient</p>
+              <h3 className="text-xl md:text-2xl font-black text-flag-red-2 leading-tight font-pirata tracking-wide">What is Coffeenityyard Bulk Order?</h3>
+              <p className="text-tomato-jam text-sm mt-1 font-medium">Centralized • Organized • Cost-Efficient</p>
             </div>
-            <button onClick={onClose} className="p-2 bg-white rounded-full text-slate-400 hover:text-slate-900 hover:bg-slate-200 transition shadow-sm border border-slate-100">
+            <button onClick={onClose} className="p-2 bg-white rounded-full text-tomato-jam hover:text-flag-red-2 hover:bg-almond-silk transition shadow-sm border border-almond-silk">
               <X size={20} />
             </button>
           </div>
 
           {/* Body */}
           <div className="p-6 overflow-y-auto scrollbar-thin space-y-8">
-            <div className="bg-amber-50 p-6 rounded-2xl border border-amber-100 space-y-4 text-slate-800 leading-relaxed text-sm md:text-base">
+            <div className="bg-white p-6 rounded-2xl border border-almond-silk space-y-4 text-flag-red-2 leading-relaxed text-sm md:text-base shadow-sm">
               <p>
                 <strong>Coffeenityyard Bulk Order</strong> is a centralized ordering platform designed for customers who need large quantities of coffee, beverages, and selected food items—made simple, organized, and cost-efficient.
               </p>
@@ -75,20 +75,20 @@ export const BulkInfoModal = ({ isOpen, onClose }) => {
             </div>
 
             <div>
-              <h4 className="text-lg font-black text-slate-900 mb-5 flex items-center gap-2">
-                <Star className="text-amber-500 fill-amber-500" size={20}/> Why Order in Bulk with Coffeenityyard?
+              <h4 className="text-lg font-black text-flag-red-2 mb-5 flex items-center gap-2 font-pirata tracking-wide">
+                <Star className="text-flag-red fill-flag-red" size={20}/> Why Order in Bulk with Coffeenityyard?
               </h4>
               <div className="grid md:grid-cols-2 gap-4">
                 {BULK_BENEFITS.map((benefit, idx) => (
-                  <div key={idx} className="flex gap-4 p-4 rounded-xl border border-slate-100 hover:border-amber-200 hover:shadow-md transition-all bg-white group">
+                  <div key={idx} className="flex gap-4 p-4 rounded-xl border border-almond-silk hover:border-flag-red hover:shadow-md transition-all bg-white group">
                     <div className="mt-1 flex-shrink-0">
-                      <div className="w-10 h-10 rounded-full bg-slate-50 border border-slate-100 flex items-center justify-center text-amber-600 group-hover:bg-amber-50 transition-colors">
+                      <div className="w-10 h-10 rounded-full bg-almond-silk border border-almond-silk flex items-center justify-center text-flag-red group-hover:bg-white transition-colors">
                         <benefit.icon size={20} />
                       </div>
                     </div>
                     <div>
-                      <h5 className="font-bold text-slate-900 text-sm md:text-base mb-1.5">{idx + 1}. {benefit.title}</h5>
-                      <p className="text-xs md:text-sm text-slate-500 leading-relaxed">{benefit.desc}</p>
+                      <h5 className="font-bold text-flag-red-2 text-sm md:text-base mb-1.5">{idx + 1}. {benefit.title}</h5>
+                      <p className="text-xs md:text-sm text-tomato-jam leading-relaxed">{benefit.desc}</p>
                     </div>
                   </div>
                 ))}
@@ -97,8 +97,8 @@ export const BulkInfoModal = ({ isOpen, onClose }) => {
           </div>
 
           {/* Footer */}
-          <div className="p-5 border-t border-slate-100 bg-white sticky bottom-0 z-20">
-            <button onClick={onClose} className="w-full py-3.5 bg-slate-900 text-white font-bold rounded-xl hover:bg-amber-600 transition shadow-lg flex justify-center items-center gap-2 text-sm md:text-base">
+          <div className="p-5 border-t border-almond-silk bg-old-lace sticky bottom-0 z-20">
+            <button onClick={onClose} className="w-full py-3.5 bg-flag-red-2 text-old-lace font-bold rounded-xl hover:bg-flag-red transition shadow-lg flex justify-center items-center gap-2 text-sm md:text-base">
               <ArrowRight size={20} /> Understood, Let's Order
             </button>
           </div>
