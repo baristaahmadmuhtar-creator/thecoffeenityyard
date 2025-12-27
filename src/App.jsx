@@ -1,53 +1,102 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+import React, { useState, Suspense, lazy } from 'react';
+import { Routes, Route } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast'; 
+import { CartProvider } from './context/CartContext';
+import { HelmetProvider, Helmet } from 'react-helmet-async';
+import { Loader2 } from 'lucide-react';
+import { Analytics } from "@vercel/analytics/react";
 
-@import url('https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Pirata+One&display=swap');
+const AdminGuard = lazy(() => import('./AdminGuard').then(module => ({ default: module.AdminGuard })));
+const MigrateMenu = lazy(() => import('./MigrateMenu').then(module => ({ default: module.MigrateMenu })));
+const AIPlanner = lazy(() => import('./components/AIPlanner').then(module => ({ default: module.AIPlanner })));
+const PreOrderForm = lazy(() => import('./components/PreOrderForm').then(module => ({ default: module.PreOrderForm })));
+const BulkInfoModal = lazy(() => import('./components/BulkInfoModal').then(module => ({ default: module.BulkInfoModal })));
 
-:root {
-  --flag-red: #CA222A;
-  --old-lace: #FDF2E3;
-  --flag-red-2: #BE292D;
-  --tomato-jam: #C82B31;
-  --almond-silk: #F8DACE;
+import { Navbar } from './components/Navbar';
+import { MenuSection } from './components/MenuSection';
+import { CartDrawer } from './components/CartDrawer';
+
+const LoadingFallback = () => (
+  <div className="fixed inset-0 flex items-center justify-center bg-white z-[100]">
+    <Loader2 className="animate-spin text-amber-500" size={40} />
+  </div>
+);
+
+function CustomerLayout() {
+  const [isCartOpen, setIsCartOpen] = useState(false);
+  const [isAIOpen, setIsAIOpen] = useState(false);
+  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+  const [isBulkInfoOpen, setIsBulkInfoOpen] = useState(false);
+
+  return (
+    <div className="antialiased font-sans bg-white">
+      <Helmet>
+        <title>The Coffeennity Yard | Bulk & Event Orders, Made Simple</title>
+        <meta name="description" content="Order bulk food effortlessly for your events. Pizza, Pasta, Waffles, and Coffee catering in Brunei with AI Planner assistance." />
+        <meta name="keywords" content="catering brunei, bulk order, pizza, pasta, coffee, event food" />
+      </Helmet>
+
+      <Navbar 
+        openCart={() => setIsCartOpen(true)} 
+        openAI={() => setIsAIOpen(true)} 
+        openBulkInfo={() => setIsBulkInfoOpen(true)} 
+      />
+      
+      <main className="pt-20 md:pt-24">
+        <MenuSection /> 
+      </main>
+
+      <footer className="bg-zinc-950 text-zinc-600 py-12 text-center text-sm border-t border-zinc-900">
+        <p>&copy; {new Date().getFullYear()} The Coffeennity Yard. All rights reserved.</p>
+      </footer>
+
+      <CartDrawer 
+        isOpen={isCartOpen} 
+        onClose={() => setIsCartOpen(false)} 
+        onCheckout={() => {
+          setIsCartOpen(false);
+          setIsCheckoutOpen(true);
+        }}
+      />
+
+      <Suspense fallback={null}>
+        {isAIOpen && <AIPlanner onClose={() => setIsAIOpen(false)} />}
+        {isCheckoutOpen && <PreOrderForm onClose={() => setIsCheckoutOpen(false)} />}
+        {isBulkInfoOpen && <BulkInfoModal isOpen={isBulkInfoOpen} onClose={() => setIsBulkInfoOpen(false)} />}
+      </Suspense>
+    </div>
+  );
 }
 
-body {
-  background-color: var(--old-lace);
-  color: var(--flag-red-2);
-  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+function App() {
+  return (
+    <HelmetProvider>
+      <CartProvider>
+        <Toaster position="bottom-center" toastOptions={{ duration: 3000 }} />
+        
+        <Analytics />
+
+        <Suspense fallback={<LoadingFallback />}>
+          <Routes>
+            <Route path="/migrate" element={<MigrateMenu />} />
+
+            <Route path="/admin/*" element={
+              <>
+                <Helmet>
+                  <title>Admin Dashboard | The Coffeennity Yard</title>
+                  <meta name="robots" content="noindex" />
+                </Helmet>
+                <AdminGuard />
+              </>
+            } />
+
+            <Route path="/*" element={<CustomerLayout />} />
+          </Routes>
+        </Suspense>
+
+      </CartProvider>
+    </HelmetProvider>
+  );
 }
 
-h1, h2, h3, h4, h5, h6 {
-  font-family: 'Pirata One', cursive;
-  letter-spacing: 1px;
-  color: var(--flag-red);
-}
-
-.font-luffy {
-  font-family: 'Permanent Marker', cursive;
-}
-
-html {
-  scroll-behavior: smooth;
-}
-
-::-webkit-scrollbar {
-  width: 10px;
-}
-
-::-webkit-scrollbar-track {
-  background: var(--almond-silk);
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--flag-red);
-  border-radius: 5px;
-  border: 2px solid var(--old-lace);
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--tomato-jam);
-}
+export default App;
