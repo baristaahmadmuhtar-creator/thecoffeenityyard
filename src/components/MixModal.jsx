@@ -50,20 +50,20 @@ export const MixModal = ({ isOpen, onClose, onConfirm, baseItem, variants, limit
             <div className="fixed inset-0 z-[70] flex items-center justify-center p-4">
                 <motion.div 
                     initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                    className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm" onClick={onClose}
+                    className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={onClose}
                 />
                 
                 <motion.div 
                     initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9, y: 20 }}
-                    className="bg-white w-full max-w-sm rounded-2xl shadow-2xl z-20 overflow-hidden flex flex-col max-h-[85vh]"
+                    className="bg-old-lace w-full max-w-sm rounded-3xl shadow-2xl z-20 overflow-hidden flex flex-col max-h-[85vh] border border-almond-silk"
                 >
-                    <div className="p-5 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+                    <div className="p-5 border-b border-almond-silk flex justify-between items-center bg-almond-silk/30">
                         <div>
-                            <h3 className="font-bold text-slate-800 text-lg">Customize Bundle</h3>
-                            <p className="text-xs text-slate-500">Select exactly {limit} items</p>
+                            <h3 className="font-bold text-flag-red-2 text-xl font-pirata tracking-wide">Customize Bundle</h3>
+                            <p className="text-xs text-tomato-jam">Select exactly {limit} items</p>
                         </div>
-                        <button onClick={onClose} className="p-1 rounded-full hover:bg-slate-200">
-                            <X size={20} className="text-slate-400 hover:text-slate-700"/>
+                        <button onClick={onClose} className="p-1 rounded-full hover:bg-white/50">
+                            <X size={20} className="text-tomato-jam hover:text-flag-red-2"/>
                         </button>
                     </div>
 
@@ -78,26 +78,26 @@ export const MixModal = ({ isOpen, onClose, onConfirm, baseItem, variants, limit
                             // RENDER MODE A: ALLOW DUPLICATES (COUNTER STYLE)
                             if (allowDuplicates) {
                                 return (
-                                    <div key={variant} className="flex justify-between items-center p-3 rounded-xl border border-slate-100 hover:border-amber-200 transition-colors bg-white">
-                                        <span className="text-sm font-bold text-slate-700">{variant}</span>
+                                    <div key={variant} className="flex justify-between items-center p-3 rounded-xl border border-almond-silk hover:border-flag-red transition-colors bg-white">
+                                        <span className="text-sm font-bold text-flag-red-2">{variant}</span>
                                         
                                         <div className="flex items-center gap-3">
                                             <button 
                                                 onClick={() => handleRemove(variant)}
                                                 disabled={count === 0}
-                                                className={`w-8 h-8 flex items-center justify-center rounded-full border transition-all ${count > 0 ? 'border-red-200 text-red-600 hover:bg-red-50' : 'border-slate-100 text-slate-300 cursor-not-allowed'}`}
+                                                className={`w-8 h-8 flex items-center justify-center rounded-full border transition-all ${count > 0 ? 'border-tomato-jam text-tomato-jam hover:bg-almond-silk' : 'border-almond-silk text-almond-silk cursor-not-allowed'}`}
                                             >
                                                 <Minus size={14} />
                                             </button>
                                             
-                                            <span className={`text-sm font-bold w-4 text-center ${count > 0 ? 'text-slate-900' : 'text-slate-300'}`}>
+                                            <span className={`text-sm font-bold w-4 text-center ${count > 0 ? 'text-flag-red-2' : 'text-almond-silk'}`}>
                                                 {count}
                                             </span>
 
                                             <button 
                                                 onClick={() => handleAdd(variant)}
                                                 disabled={isMaxReached}
-                                                className={`w-8 h-8 flex items-center justify-center rounded-full border transition-all ${!isMaxReached ? 'border-amber-200 text-amber-600 hover:bg-amber-50' : 'border-slate-100 text-slate-300 cursor-not-allowed'}`}
+                                                className={`w-8 h-8 flex items-center justify-center rounded-full border transition-all ${!isMaxReached ? 'border-flag-red text-flag-red hover:bg-almond-silk' : 'border-almond-silk text-almond-silk cursor-not-allowed'}`}
                                             >
                                                 <Plus size={14} />
                                             </button>
@@ -115,26 +115,26 @@ export const MixModal = ({ isOpen, onClose, onConfirm, baseItem, variants, limit
                                     className={`
                                         p-3 rounded-xl border flex justify-between items-center cursor-pointer transition-all
                                         ${isSelected 
-                                            ? 'border-amber-500 bg-amber-50 shadow-sm' 
+                                            ? 'border-flag-red bg-almond-silk shadow-sm' 
                                             : isDisabled 
-                                                ? 'border-slate-100 bg-slate-50 opacity-50 cursor-not-allowed' 
-                                                : 'border-slate-200 hover:border-amber-300 hover:bg-white'
+                                                ? 'border-almond-silk bg-almond-silk/30 opacity-60 cursor-not-allowed' 
+                                                : 'border-almond-silk hover:border-flag-red hover:bg-white'
                                         }
                                     `}
                                 >
-                                    <span className={`text-sm font-bold ${isSelected ? 'text-amber-900' : 'text-slate-600'}`}>{variant}</span>
-                                    <div className={`w-5 h-5 rounded-full border flex items-center justify-center transition-colors ${isSelected ? 'bg-amber-500 border-amber-500' : 'border-slate-300 bg-white'}`}>
-                                        {isSelected && <Check size={12} className="text-white" />}
+                                    <span className={`text-sm font-bold ${isSelected ? 'text-flag-red-2' : 'text-tomato-jam'}`}>{variant}</span>
+                                    <div className={`w-5 h-5 rounded-full border flex items-center justify-center transition-colors ${isSelected ? 'bg-flag-red border-flag-red' : 'border-almond-silk bg-white'}`}>
+                                        {isSelected && <Check size={12} className="text-old-lace" />}
                                     </div>
                                 </div>
                             );
                         })}
                     </div>
 
-                    <div className="p-5 border-t border-slate-100 bg-slate-50 mt-auto">
+                    <div className="p-5 border-t border-almond-silk bg-old-lace mt-auto">
                         <div className="flex justify-between items-center mb-4">
-                            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Selected</span>
-                            <span className={`text-sm font-black ${selectedMix.length === limit ? 'text-green-600' : 'text-amber-600'}`}>
+                            <span className="text-xs font-bold text-tomato-jam uppercase tracking-wider">Total Selected</span>
+                            <span className={`text-sm font-black ${selectedMix.length === limit ? 'text-[#25D366]' : 'text-flag-red'}`}>
                                 {selectedMix.length} / {limit}
                             </span>
                         </div>
@@ -142,10 +142,10 @@ export const MixModal = ({ isOpen, onClose, onConfirm, baseItem, variants, limit
                             onClick={() => onConfirm(selectedMix)}
                             disabled={selectedMix.length !== limit}
                             className={`
-                                w-full py-3 rounded-xl font-bold text-white transition-all shadow-lg flex justify-center items-center gap-2
+                                w-full py-3 rounded-xl font-bold text-old-lace transition-all shadow-lg flex justify-center items-center gap-2
                                 ${selectedMix.length === limit 
-                                    ? 'bg-slate-900 hover:bg-amber-600 hover:shadow-amber-600/20 active:scale-[0.98]' 
-                                    : 'bg-slate-300 cursor-not-allowed shadow-none'
+                                    ? 'bg-flag-red-2 hover:bg-flag-red hover:shadow-flag-red/20 active:scale-[0.98]' 
+                                    : 'bg-almond-silk text-tomato-jam/50 cursor-not-allowed shadow-none'
                                 }
                             `}
                         >
