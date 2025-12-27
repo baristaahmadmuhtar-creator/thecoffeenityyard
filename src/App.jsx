@@ -12,13 +12,16 @@ const AIPlanner = lazy(() => import('./components/AIPlanner').then(module => ({ 
 const PreOrderForm = lazy(() => import('./components/PreOrderForm').then(module => ({ default: module.PreOrderForm })));
 const BulkInfoModal = lazy(() => import('./components/BulkInfoModal').then(module => ({ default: module.BulkInfoModal })));
 
+// Jika Anda ingin menambahkan Hero section yang tadi kita buat, jangan lupa import di sini:
+// const Hero = lazy(() => import('./components/Hero').then(module => ({ default: module.Hero })));
+
 import { Navbar } from './components/Navbar';
 import { MenuSection } from './components/MenuSection';
 import { CartDrawer } from './components/CartDrawer';
 
 const LoadingFallback = () => (
-  <div className="fixed inset-0 flex items-center justify-center bg-white z-[100]">
-    <Loader2 className="animate-spin text-amber-500" size={40} />
+  <div className="fixed inset-0 flex items-center justify-center bg-old-lace z-[100]">
+    <Loader2 className="animate-spin text-flag-red" size={40} />
   </div>
 );
 
@@ -29,7 +32,7 @@ function CustomerLayout() {
   const [isBulkInfoOpen, setIsBulkInfoOpen] = useState(false);
 
   return (
-    <div className="antialiased font-sans bg-white">
+    <div className="antialiased font-sans bg-old-lace">
       <Helmet>
         <title>The Coffeennity Yard | Bulk & Event Orders, Made Simple</title>
         <meta name="description" content="Order bulk food effortlessly for your events. Pizza, Pasta, Waffles, and Coffee catering in Brunei with AI Planner assistance." />
@@ -43,10 +46,13 @@ function CustomerLayout() {
       />
       
       <main className="pt-20 md:pt-24">
+        {/* Jika ingin menampilkan Hero, tambahkan komponennya di sini */}
+        {/* <Suspense fallback={null}><Hero openAI={() => setIsAIOpen(true)} openBulkInfo={() => setIsBulkInfoOpen(true)} /></Suspense> */}
+        
         <MenuSection /> 
       </main>
 
-      <footer className="bg-zinc-950 text-zinc-600 py-12 text-center text-sm border-t border-zinc-900">
+      <footer className="bg-flag-red-2 text-almond-silk py-12 text-center text-sm border-t border-flag-red">
         <p>&copy; {new Date().getFullYear()} The Coffeennity Yard. All rights reserved.</p>
       </footer>
 
