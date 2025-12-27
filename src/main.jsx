@@ -7,7 +7,7 @@ import './index.css'
 if (import.meta.env.MODE === 'production') {
   console.info(
     "%cDeveloped with ❤️ by BaristaAhmadmuhtar",
-    "background: #1e293b; color: #f59e0b; font-size: 14px; font-weight: bold; padding: 10px; border-radius: 5px; border: 1px solid #f59e0b;"
+    "background: #BE292D; color: #FDF2E3; font-size: 14px; font-weight: bold; padding: 10px; border-radius: 5px; border: 1px solid #FDF2E3;"
   );
 }
 
