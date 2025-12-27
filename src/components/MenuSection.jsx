@@ -31,32 +31,32 @@ const OptionModal = ({ item, isOpen, onClose, onConfirm, onMixSelect }) => {
                 />
                 <motion.div 
                     initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9, y: 20 }}
-                    className="bg-white w-full max-w-sm rounded-2xl shadow-2xl z-10 overflow-hidden"
+                    className="bg-old-lace w-full max-w-sm rounded-2xl shadow-2xl z-10 overflow-hidden border border-almond-silk"
                 >
-                    <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
-                        <h3 className="font-bold text-slate-800">{item.options.title || 'Select Options'}</h3>
-                        <button onClick={onClose}><X size={20} className="text-slate-400 hover:text-red-500"/></button>
+                    <div className="p-4 border-b border-almond-silk flex justify-between items-center bg-almond-silk/30">
+                        <h3 className="font-bold text-flag-red-2 font-pirata tracking-wide text-lg">{item.options.title || 'Select Options'}</h3>
+                        <button onClick={onClose}><X size={20} className="text-tomato-jam hover:text-flag-red"/></button>
                     </div>
-                    <div className="p-4 space-y-2 max-h-[60vh] overflow-y-auto">
+                    <div className="p-4 space-y-2 max-h-[60vh] overflow-y-auto custom-scrollbar">
                         {item.options.choices.map((choice) => (
                             <div 
                                 key={choice}
                                 onClick={() => setSelected(choice)}
                                 className={`p-3 rounded-lg border cursor-pointer flex justify-between items-center transition-all ${
                                     selected === choice 
-                                    ? 'border-amber-500 bg-amber-50 text-amber-900 font-semibold shadow-sm' 
-                                    : 'border-slate-200 hover:bg-slate-50 text-slate-600'
+                                    ? 'border-flag-red bg-white text-flag-red-2 font-bold shadow-sm' 
+                                    : 'border-almond-silk hover:bg-white text-tomato-jam'
                                 }`}
                             >
                                 <span>{choice}</span>
-                                {selected === choice && <Check size={18} className="text-amber-600"/>}
+                                {selected === choice && <Check size={18} className="text-flag-red"/>}
                             </div>
                         ))}
                     </div>
-                    <div className="p-4 border-t border-slate-100">
+                    <div className="p-4 border-t border-almond-silk">
                         <button 
                             onClick={handleConfirm}
-                            className="w-full py-3 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-xl shadow-lg shadow-amber-500/20 transition-all active:scale-95"
+                            className="w-full py-3 bg-flag-red-2 hover:bg-flag-red text-old-lace font-bold rounded-xl shadow-lg shadow-flag-red/20 transition-all active:scale-95"
                         >
                             {selected.toLowerCase() === 'mixed' ? 'Continue to Mix' : 'Confirm Selection'}
                         </button>
@@ -159,11 +159,11 @@ export const MenuSection = () => {
 
   // --- REUSABLE COMPONENTS ---
   const ViewToggleButton = ({ className }) => (
-      <div className={`flex bg-slate-100 p-1 rounded-xl shrink-0 border border-slate-200 ${className}`}>
+      <div className={`flex bg-almond-silk p-1 rounded-xl shrink-0 border border-almond-silk ${className}`}>
         <button 
             onClick={() => setViewMode('grid')}
             className={`p-2 rounded-lg transition-all flex items-center justify-center ${
-                viewMode === 'grid' ? 'bg-white shadow-sm text-amber-600' : 'text-slate-400 hover:text-slate-600'
+                viewMode === 'grid' ? 'bg-white shadow-sm text-flag-red' : 'text-tomato-jam/50 hover:text-tomato-jam'
             }`}
             aria-label="Grid View"
         >
@@ -172,7 +172,7 @@ export const MenuSection = () => {
         <button 
             onClick={() => setViewMode('list')}
             className={`p-2 rounded-lg transition-all flex items-center justify-center ${
-                viewMode === 'list' ? 'bg-white shadow-sm text-amber-600' : 'text-slate-400 hover:text-slate-600'
+                viewMode === 'list' ? 'bg-white shadow-sm text-flag-red' : 'text-tomato-jam/50 hover:text-tomato-jam'
             }`}
             aria-label="List View"
         >
@@ -194,31 +194,31 @@ export const MenuSection = () => {
 
   if (loadingMenu) {
       return (
-          <section id="menu" className="py-24 bg-white min-h-screen flex items-center justify-center">
-              <Loader2 className="animate-spin text-amber-500 mr-2" size={32} />
-              <span className="text-xl font-bold text-slate-700">Loading Menu...</span>
+          <section id="menu" className="py-24 bg-old-lace min-h-screen flex items-center justify-center">
+              <Loader2 className="animate-spin text-flag-red mr-2" size={32} />
+              <span className="text-xl font-bold text-flag-red-2">Loading Menu...</span>
           </section>
       );
   }
 
   if (errorMenu) {
       return (
-          <section id="menu" className="py-24 bg-white min-h-screen text-center">
-              <h2 className="text-4xl font-black text-red-600 mb-4">Connection Error</h2>
-              <p className="text-lg text-slate-600">{errorMenu}</p>
+          <section id="menu" className="py-24 bg-old-lace min-h-screen text-center">
+              <h2 className="text-4xl font-black text-flag-red mb-4">Connection Error</h2>
+              <p className="text-lg text-tomato-jam">{errorMenu}</p>
           </section>
       );
   }
 
   return (
-    <section id="menu" className="py-12 md:py-24 bg-white min-h-screen">
+    <section id="menu" className="py-12 md:py-24 bg-old-lace min-h-screen">
       <div className="container mx-auto px-4 md:px-6">
         
         {/* --- HEADER NAVIGATION (RESPONSIVE) --- */}
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 md:mb-12 gap-6">
           
           <div className="flex items-center justify-between md:justify-start w-full md:w-auto">
-             <h2 className="text-3xl md:text-5xl font-black tracking-tight text-slate-900">OUR MENU</h2>
+             <h2 className="text-3xl md:text-5xl font-black tracking-tight text-flag-red-2 font-pirata">OUR MENU</h2>
              <ViewToggleButton className="md:hidden" />
           </div>
           
@@ -231,8 +231,8 @@ export const MenuSection = () => {
                         onClick={() => setActiveCategory(cat)}
                         className={`snap-start whitespace-nowrap px-5 py-2.5 rounded-full text-xs md:text-sm font-bold transition-all duration-300 shadow-sm border ${
                         activeCategory === cat 
-                            ? 'bg-amber-500 border-amber-500 text-white shadow-amber-500/30' 
-                            : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'
+                            ? 'bg-flag-red border-flag-red text-white shadow-flag-red/30' 
+                            : 'bg-white border-almond-silk text-tomato-jam hover:bg-almond-silk'
                         }`}
                     >
                         {cat}
@@ -240,7 +240,7 @@ export const MenuSection = () => {
                     ))}
                     <div className="w-6 shrink-0 md:hidden"></div>
                 </div>
-                <div className="absolute right-0 top-0 bottom-2 w-12 bg-gradient-to-l from-white to-transparent pointer-events-none md:hidden rounded-r-xl" />
+                <div className="absolute right-0 top-0 bottom-2 w-12 bg-gradient-to-l from-old-lace to-transparent pointer-events-none md:hidden rounded-r-xl" />
             </div>
             <ViewToggleButton className="hidden md:flex" />
           </div>
@@ -249,10 +249,10 @@ export const MenuSection = () => {
 
         {/* --- LIST ITEMS --- */}
         {filteredItems.length === 0 ? (
-             <div className="text-center py-20 bg-slate-50 rounded-3xl border border-slate-100 border-dashed">
-                 <ShoppingBag className="mx-auto text-slate-300 mb-4" size={56}/>
-                 <p className="text-slate-500 font-medium">No items available in this category.</p>
-                 <button onClick={() => setActiveCategory("All")} className="mt-4 text-amber-600 font-bold hover:underline">View All Items</button>
+             <div className="text-center py-20 bg-almond-silk/20 rounded-3xl border border-almond-silk border-dashed">
+                 <ShoppingBag className="mx-auto text-almond-silk mb-4" size={56}/>
+                 <p className="text-tomato-jam font-medium">No items available in this category.</p>
+                 <button onClick={() => setActiveCategory("All")} className="mt-4 text-flag-red font-bold hover:underline">View All Items</button>
              </div>
         ) : (
             <motion.div 
@@ -288,35 +288,35 @@ export const MenuSection = () => {
                       exit="exit"
                       layout
                       className={`
-                        bg-white rounded-2xl md:rounded-3xl overflow-hidden border border-slate-100 
+                        bg-white rounded-2xl md:rounded-3xl overflow-hidden border border-almond-silk 
                         shadow-[0_2px_8px_-4px_rgba(0,0,0,0.05)] hover:shadow-[0_8px_30px_-12px_rgba(0,0,0,0.1)] 
                         transition-all duration-300 flex flex-col h-full group touch-manipulation
                         ${isOutOfStock ? 'opacity-80 grayscale-[0.8]' : ''}
                       `}
                     >
-                      <div className={`${imageHeight} w-full overflow-hidden relative shrink-0 bg-slate-100`}>
+                      <div className={`${imageHeight} w-full overflow-hidden relative shrink-0 bg-almond-silk`}>
                         <div className="absolute top-2 left-2 md:top-3 md:left-3 z-10 flex flex-col items-start gap-1.5">
                             {item.badge && (
-                                <div className="bg-white/95 backdrop-blur text-slate-900 text-[10px] md:text-xs font-bold px-2 py-1 rounded-lg shadow-sm border border-white/50">
+                                <div className="bg-white/95 backdrop-blur text-flag-red-2 text-[10px] md:text-xs font-bold px-2 py-1 rounded-lg shadow-sm border border-white/50">
                                     {item.badge}
                                 </div>
                             )}
                             {!isOutOfStock && discount > 0 && (
-                                <div className="bg-red-500 text-white text-[10px] md:text-xs font-black px-2 py-1 rounded-lg shadow-sm flex items-center gap-1">
+                                <div className="bg-flag-red text-white text-[10px] md:text-xs font-black px-2 py-1 rounded-lg shadow-sm flex items-center gap-1">
                                     <Tag size={10} className="fill-white"/> SAVE {discount}%
                                 </div>
                             )}
                         </div>
 
                         {isLowStock && (
-                              <div className="absolute top-2 right-2 z-10 bg-orange-500 text-white text-[10px] font-bold px-2 py-1 rounded-lg shadow-sm animate-pulse">
+                              <div className="absolute top-2 right-2 z-10 bg-tomato-jam text-white text-[10px] font-bold px-2 py-1 rounded-lg shadow-sm animate-pulse">
                                  {item.stock} LEFT
                              </div>
                         )}
 
                         {isOutOfStock && (
                               <div className="absolute inset-0 z-20 bg-slate-900/40 backdrop-blur-[1px] flex flex-col items-center justify-center">
-                                 <div className="bg-red-600 text-white px-4 py-1.5 rounded-xl font-black text-sm tracking-widest border-2 border-white shadow-xl transform -rotate-6">
+                                 <div className="bg-flag-red text-white px-4 py-1.5 rounded-xl font-black text-sm tracking-widest border-2 border-white shadow-xl transform -rotate-6">
                                     SOLD OUT
                                  </div>
                              </div>
@@ -335,26 +335,26 @@ export const MenuSection = () => {
 
                       <div className={`${contentPadding} flex flex-col flex-grow`}>
                         <div className={`flex ${isGrid ? 'flex-col gap-1.5' : 'flex-col md:flex-row md:justify-between'} mb-2`}>
-                          <h3 className={`${titleSize} text-slate-800 line-clamp-2`}>
+                          <h3 className={`${titleSize} text-flag-red-2 line-clamp-2`}>
                               {item.name}
                           </h3>
                           
                           <div className={`flex items-baseline ${isGrid ? 'gap-1.5' : 'flex-col md:items-end'} mt-auto`}>
                             {item.originalPrice && item.originalPrice > item.price && (
-                                <span className="text-[10px] md:text-xs text-slate-400 font-semibold line-through decoration-slate-400/50">
+                                <span className="text-[10px] md:text-xs text-tomato-jam/50 font-semibold line-through decoration-tomato-jam/50">
                                     {formatBND(item.originalPrice)}
                                 </span>
                             )}
                             <div className="flex items-baseline gap-1">
-                                <span className={`${priceSize} font-black tracking-tight ${isOutOfStock ? 'text-slate-400' : 'text-amber-600'}`}>
+                                <span className={`${priceSize} font-black tracking-tight ${isOutOfStock ? 'text-almond-silk' : 'text-flag-red'}`}>
                                     {formatBND(item.price)}
                                 </span>
-                                <span className="text-slate-400 text-[9px] md:text-[10px] font-bold uppercase">/{item.unit}</span>
+                                <span className="text-tomato-jam text-[9px] md:text-[10px] font-bold uppercase">/{item.unit}</span>
                             </div>
                           </div>
                         </div>
 
-                        <p className={`text-slate-500 text-xs md:text-sm mb-4 flex-grow leading-relaxed ${isGrid ? 'hidden md:block' : 'line-clamp-2'}`}>
+                        <p className={`text-tomato-jam text-xs md:text-sm mb-4 flex-grow leading-relaxed ${isGrid ? 'hidden md:block' : 'line-clamp-2'}`}>
                           {item.description}
                         </p>
 
@@ -363,8 +363,8 @@ export const MenuSection = () => {
                           disabled={isOutOfStock}
                           className={`w-full py-2.5 md:py-3.5 rounded-xl font-bold text-xs md:text-sm flex items-center justify-center gap-2 transition-all shadow-sm active:scale-95 ${
                             isOutOfStock 
-                            ? 'bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200' 
-                            : 'bg-slate-900 text-white hover:bg-amber-600 hover:shadow-lg hover:shadow-amber-600/20'
+                            ? 'bg-almond-silk text-tomato-jam/50 cursor-not-allowed border border-almond-silk' 
+                            : 'bg-flag-red-2 text-white hover:bg-flag-red hover:shadow-lg hover:shadow-flag-red/20'
                           }`}
                         >
                           {isOutOfStock ? (
