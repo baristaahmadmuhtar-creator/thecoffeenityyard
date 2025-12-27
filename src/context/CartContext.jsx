@@ -41,9 +41,10 @@ export const CartProvider = ({ children }) => {
       if (existingItem) {
         const newQty = existingItem.quantity + quantityToAdd;
         
+        // Notification Style Updated to Red Theme
         toast.success(`Updated: ${itemName}`, {
-             style: { background: '#fff', color: '#333', border: '1px solid #e2e8f0' },
-             iconTheme: { primary: '#d97706', secondary: '#fff' },
+             style: { background: '#fff', color: '#333', border: '1px solid #F8DACE' },
+             iconTheme: { primary: '#CA222A', secondary: '#FDF2E3' },
         });
 
         // Update quantity DAN pastikan harga terupdate
@@ -60,9 +61,10 @@ export const CartProvider = ({ children }) => {
             selectedOption 
         };
 
+        // Notification Style Updated to Red Theme
         toast.success(`Added: ${itemName}`, {
-            style: { background: '#fff', color: '#333', border: '1px solid #e2e8f0' },
-            iconTheme: { primary: '#d97706', secondary: '#fff' },
+            style: { background: '#fff', color: '#333', border: '1px solid #F8DACE' },
+            iconTheme: { primary: '#CA222A', secondary: '#FDF2E3' },
         });
 
         return [...prevCart, newItem];
