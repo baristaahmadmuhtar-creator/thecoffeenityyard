@@ -17,21 +17,21 @@ export const Navbar = ({ openCart, openAI, openBulkInfo }) => {
     <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 
       ${scrolled
-        ? 'bg-old-lace/95 backdrop-blur-lg py-3 shadow-sm border-b border-flag-red/10'
+        ? 'bg-old-lace/95 backdrop-blur-xl py-3 shadow-sm border-b border-almond-silk'
         : 'bg-transparent py-5'
       }`}
     >
       <div className="max-w-screen-xl mx-auto px-4 md:px-6 flex justify-between items-center">
 
-        {/* LOGO (UPDATED: Font Pirata & Warna Tema) */}
+        {/* LOGO */}
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           className="
-            font-pirata tracking-wide cursor-pointer select-none
-            text-xl sm:text-2xl md:text-3xl lg:text-4xl
-            flex items-center gap-1 text-flag-red-2
-            whitespace-nowrap
+            font-black tracking-tight cursor-pointer select-none
+            text-base sm:text-xl md:text-2xl lg:text-3xl
+            flex items-center gap-1 text-slate-900
+            whitespace-nowrap bbh-hegarty-regular
           "
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
         >
@@ -49,11 +49,11 @@ export const Navbar = ({ openCart, openAI, openBulkInfo }) => {
             className="
               flex items-center gap-2 
               px-3 py-2 md:px-4 md:py-2.5 
-              bg-white hover:bg-almond-silk
+              bg-white hover:bg-almond-silk/50
               border border-transparent hover:border-almond-silk
               rounded-full 
-              text-tomato-jam hover:text-flag-red-2 text-xs md:text-sm font-bold
-              transition-all
+              text-slate-600 hover:text-flag-red text-xs md:text-sm font-bold
+              transition-all shadow-sm
             "
           >
             <Info size={16} />
@@ -66,10 +66,10 @@ export const Navbar = ({ openCart, openAI, openBulkInfo }) => {
             className="
               hidden md:flex items-center gap-2 
               px-5 py-2.5 
-              bg-almond-silk hover:bg-white
+              bg-white/80 hover:bg-white
               border border-almond-silk hover:border-flag-red
               rounded-full 
-              text-flag-red-2 text-sm font-bold
+              text-slate-800 text-sm font-bold
               transition-all shadow-sm group
             "
           >
@@ -89,8 +89,10 @@ export const Navbar = ({ openCart, openAI, openBulkInfo }) => {
             onClick={openCart}
             className="
               relative p-3 rounded-full 
-              text-flag-red-2 hover:text-flag-red 
-              transition-colors
+              text-slate-800 hover:text-flag-red 
+              bg-white/50 hover:bg-white
+              border border-transparent hover:border-almond-silk
+              transition-all
             "
           >
             <ShoppingBag size={24} strokeWidth={2} />
@@ -103,12 +105,12 @@ export const Navbar = ({ openCart, openAI, openBulkInfo }) => {
                   exit={{ scale: 0 }}
                   className="
                     absolute top-1.5 right-1.5 
-                    bg-flag-red text-old-lace 
+                    bg-flag-red text-white 
                     text-[10px] sm:text-[11px] font-bold 
                     w-4.5 h-4.5 sm:w-5 sm:h-5 
                     flex items-center justify-center
                     rounded-full shadow-md 
-                    border border-old-lace
+                    border border-white
                   "
                 >
                   {cartCount}

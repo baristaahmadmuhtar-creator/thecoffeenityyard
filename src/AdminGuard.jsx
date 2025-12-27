@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'firebase/auth'; 
-import { auth } from './firebase'; // Import auth dari path yang benar
+import { auth } from './firebase'; 
 import { AdminDashboard } from './AdminDashboard'; 
 import { Loader2 } from 'lucide-react'; 
-import toast from 'react-hot-toast'; // Pastikan Anda juga mengimpor toast di sini
+import toast from 'react-hot-toast'; 
 
 export const AdminGuard = () => {
     const [user, setUser] = useState(null);
@@ -60,8 +60,8 @@ export const AdminGuard = () => {
 
     if (loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-gray-50">
-                <Loader2 className="animate-spin text-amber-500 mr-2" size={24} /> 
+            <div className="min-h-screen flex items-center justify-center bg-old-lace">
+                <Loader2 className="animate-spin text-flag-red mr-2" size={24} /> 
                 <span className="text-slate-600">Checking Authentication...</span>
             </div>
         );
@@ -71,8 +71,8 @@ export const AdminGuard = () => {
         // Dashboard
         return (
             <>
-                <div className="flex justify-between p-4 bg-slate-100 border-b border-slate-200">
-                    <span className="text-lg font-black text-slate-700">THE COFFEENITY YARD - ADMIN</span>
+                <div className="flex justify-between p-4 bg-old-lace border-b border-almond-silk">
+                    <span className="text-lg font-black text-slate-700 bbh-hegarty-regular">THE COFFEENITY YARD - ADMIN</span>
                     <button onClick={handleLogout} className="text-sm text-red-600 hover:text-red-700 font-bold bg-white px-3 py-1 rounded-lg shadow-sm transition">
                         Logout ({user.email})
                     </button>
@@ -84,9 +84,9 @@ export const AdminGuard = () => {
 
     // Form Login
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="min-h-screen flex items-center justify-center bg-old-lace">
             <form onSubmit={handleLogin} className="p-8 bg-white shadow-2xl rounded-xl w-full max-w-sm space-y-6 border border-gray-100">
-                <h2 className="text-3xl font-black text-slate-900 text-center">🔐 Admin Login</h2>
+                <h2 className="text-3xl font-black text-slate-900 text-center bbh-hegarty-regular">🔐 Admin Login</h2>
                 {error && <p className="text-red-600 bg-red-50 p-3 rounded-lg text-sm font-medium text-center border border-red-200">{error}</p>}
                 
                 <input
@@ -96,7 +96,7 @@ export const AdminGuard = () => {
                     onChange={(e) => setEmail(e.target.value)}
                     required
                     disabled={isLoggingIn}
-                    className="w-full p-4 border border-gray-300 rounded-lg focus:ring-amber-500 focus:border-amber-500 transition disabled:bg-gray-100"
+                    className="w-full p-4 border border-gray-300 rounded-lg focus:ring-flag-red focus:border-flag-red transition disabled:bg-gray-100 font-sans"
                 />
                 
                 <input
@@ -106,13 +106,13 @@ export const AdminGuard = () => {
                     onChange={(e) => setPassword(e.target.value)}
                     required
                     disabled={isLoggingIn}
-                    className="w-full p-4 border border-gray-300 rounded-lg focus:ring-amber-500 focus:border-amber-500 transition disabled:bg-gray-100"
+                    className="w-full p-4 border border-gray-300 rounded-lg focus:ring-flag-red focus:border-flag-red transition disabled:bg-gray-100 font-sans"
                 />
 
                 <button
                     type="submit"
                     disabled={isLoggingIn}
-                    className="w-full bg-slate-900 text-white font-bold p-4 rounded-lg hover:bg-amber-600 transition disabled:opacity-50 flex justify-center items-center gap-2 shadow-lg"
+                    className="w-full bg-slate-900 text-white font-bold p-4 rounded-lg hover:bg-flag-red transition disabled:opacity-50 flex justify-center items-center gap-2 shadow-lg"
                 >
                     {isLoggingIn ? (
                         <>

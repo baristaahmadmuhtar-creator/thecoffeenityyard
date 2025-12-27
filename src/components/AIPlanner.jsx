@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
-import { X, Sparkles, Loader2, CheckCircle, Users, PartyPopper, Wallet, ArrowRight, ChevronLeft } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { X, Sparkles, Loader2, CheckCircle, Users, PartyPopper, Wallet, ArrowRight, ChevronLeft, AlertCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useMenuData } from '../hooks/useMenuData';
+// import { MENU_ITEMS } from '../data/menuData'; // <-- HAPUS IMPORT INI
+import { useMenuData } from '../hooks/useMenuData'; // <-- GANTI DENGAN IMPORT HOOK BARU
 import { useCart } from '../context/CartContext';
 import toast from 'react-hot-toast';
 
 export const AIPlanner = ({ onClose }) => {
-    const { menuItems: firestoreMenu, loadingMenu } = useMenuData();
+    const { menuItems: firestoreMenu, loadingMenu } = useMenuData(); // <--- Ambil data dari hook
     
     const [step, setStep] = useState(1);
     const [loading, setLoading] = useState(false);
@@ -22,9 +23,9 @@ export const AIPlanner = ({ onClose }) => {
     if (loadingMenu) {
         return (
             <div className="fixed inset-0 z-[80] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm">
-                <div className="bg-old-lace p-6 rounded-xl shadow-2xl flex items-center gap-3 border border-almond-silk">
+                <div className="bg-white p-6 rounded-xl shadow-2xl flex items-center gap-3">
                     <Loader2 className="animate-spin text-flag-red" size={24}/>
-                    <span className="text-flag-red-2 font-bold">Loading Menu Data...</span>
+                    <span className="text-slate-700">Loading Menu Data...</span>
                 </div>
             </div>
         );
@@ -54,8 +55,8 @@ export const AIPlanner = ({ onClose }) => {
             id: i.id,  
             name: i.name,  
             minQty: i.minQty || 1,  
-            price: i.price, 
-            stock: i.stock, 
+            price: i.price, // <-- Harga Real-time
+            stock: i.stock, // <-- Stock Real-time
             options: i.options ? i.options.choices : null
         }));
 
@@ -127,6 +128,7 @@ export const AIPlanner = ({ onClose }) => {
         let addedCount = 0;
         
         result.items.forEach(rec => {
+            // Gunakan firestoreMenu untuk mencari item
             const item = firestoreMenu.find(i => i.id === rec.id); 
             if (item) {
                 addToCart(item, rec.quantity, rec.selectedOption || null);
@@ -146,11 +148,11 @@ export const AIPlanner = ({ onClose }) => {
             onClick={() => setBudget(value)}
             className={`flex-1 p-3 rounded-xl border flex flex-col items-center gap-2 transition-all ${
                 budget === value 
-                ? 'bg-almond-silk border-flag-red text-flag-red-2 ring-1 ring-flag-red' 
-                : 'bg-white border-almond-silk text-tomato-jam hover:bg-white/80'
+                ? 'bg-old-lace border-flag-red text-flag-red ring-1 ring-flag-red' 
+                : 'bg-white border-slate-200 text-slate-500 hover:bg-old-lace'
             }`}
         >
-            <Icon size={20} className={budget === value ? "text-flag-red" : "text-tomato-jam/50"}/>
+            <Icon size={20} className={budget === value ? "text-flag-red" : "text-slate-400"}/>
             <span className="text-xs font-bold">{label}</span>
         </button>
     );
@@ -166,26 +168,26 @@ export const AIPlanner = ({ onClose }) => {
                 initial={{ opacity: 0, scale: 0.95, y: 20 }} 
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                className="bg-old-lace w-full max-w-lg rounded-3xl relative z-10 border border-almond-silk shadow-2xl overflow-hidden flex flex-col max-h-[85vh]"
+                className="bg-white w-full max-w-lg rounded-3xl relative z-10 border border-almond-silk shadow-2xl overflow-hidden flex flex-col max-h-[85vh]"
             >
                 {/* Header */}
-                <div className="p-5 border-b border-almond-silk flex justify-between items-center bg-old-lace sticky top-0 z-20">
+                <div className="p-5 border-b border-old-lace flex justify-between items-center bg-white sticky top-0 z-20">
                     <div className="flex items-center gap-2">
-                        <div className="p-2 bg-almond-silk rounded-lg shadow-sm">
+                        <div className="p-2 bg-gradient-to-br from-old-lace to-almond-silk rounded-lg shadow-sm">
                             <Sparkles className="text-flag-red" size={20}/> 
                         </div>
                         <div>
-                            <h3 className="text-lg font-black text-flag-red-2 tracking-wide font-pirata">YARD AI</h3>
-                            <p className="text-xs text-tomato-jam font-medium">Smart Catering Assistant</p>
+                            <h3 className="text-lg font-black text-slate-900 tracking-tight bbh-hegarty-regular">YARD AI</h3>
+                            <p className="text-xs text-slate-500 font-medium">Smart Catering Assistant</p>
                         </div>
                     </div>
-                    <button onClick={onClose} className="p-2 rounded-full hover:bg-almond-silk transition-colors">
-                        <X className="text-tomato-jam hover:text-flag-red-2"/>
+                    <button onClick={onClose} className="p-2 rounded-full hover:bg-old-lace transition-colors">
+                        <X className="text-slate-400 hover:text-slate-900"/>
                     </button>
                 </div>
 
                 {/* Content Area */}
-                <div className="p-6 overflow-y-auto custom-scrollbar flex-grow">
+                <div className="p-6 overflow-y-auto custom-scrollbar flex-grow bg-white">
                     <AnimatePresence mode="wait">
                         {step === 1 ? (
                             <motion.div 
@@ -195,7 +197,7 @@ export const AIPlanner = ({ onClose }) => {
                             >
                                 {/* Input: Guests */}
                                 <div className="space-y-2">
-                                    <label className="text-sm font-bold text-tomato-jam flex items-center gap-2">
+                                    <label className="text-sm font-bold text-slate-700 flex items-center gap-2">
                                         <Users size={16} className="text-flag-red"/> Total Guests
                                     </label>
                                     <input 
@@ -204,21 +206,21 @@ export const AIPlanner = ({ onClose }) => {
                                         pattern="[0-9]*"
                                         value={guests} 
                                         onChange={e => setGuests(e.target.value)} 
-                                        className="w-full bg-white p-4 rounded-xl text-flag-red-2 font-bold border border-almond-silk focus:border-flag-red focus:ring-4 focus:ring-flag-red/10 outline-none transition-all placeholder:text-tomato-jam/50 text-lg" 
+                                        className="w-full bg-old-lace p-4 rounded-xl text-slate-900 font-bold border border-transparent focus:border-flag-red focus:ring-4 focus:ring-flag-red/10 outline-none transition-all placeholder:text-slate-400 text-lg font-sans" 
                                         placeholder="e.g. 30" 
                                     />
                                 </div>
 
                                 {/* Input: Event Type */}
                                 <div className="space-y-2">
-                                    <label className="text-sm font-bold text-tomato-jam flex items-center gap-2">
+                                    <label className="text-sm font-bold text-slate-700 flex items-center gap-2">
                                         <PartyPopper size={16} className="text-flag-red"/> Event Type
                                     </label>
                                     <div className="relative">
                                         <select 
                                             value={eventType} 
                                             onChange={e => setEventType(e.target.value)} 
-                                            className="w-full bg-white p-4 rounded-xl text-flag-red-2 font-bold border border-almond-silk focus:border-flag-red outline-none appearance-none cursor-pointer"
+                                            className="w-full bg-old-lace p-4 rounded-xl text-slate-900 font-bold border border-transparent focus:border-flag-red outline-none appearance-none cursor-pointer"
                                         >
                                             <option>Birthday Party</option>
                                             <option>Office Meeting</option>
@@ -226,13 +228,13 @@ export const AIPlanner = ({ onClose }) => {
                                             <option>Wedding Reception</option>
                                             <option>Casual Hangout</option>
                                         </select>
-                                        <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-tomato-jam">▼</div>
+                                        <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">▼</div>
                                     </div>
                                 </div>
 
                                 {/* Input: Budget */}
                                 <div className="space-y-2">
-                                    <label className="text-sm font-bold text-tomato-jam flex items-center gap-2">
+                                    <label className="text-sm font-bold text-slate-700 flex items-center gap-2">
                                         <Wallet size={16} className="text-flag-red"/> Budget Level
                                     </label>
                                     <div className="flex gap-3">
@@ -246,7 +248,7 @@ export const AIPlanner = ({ onClose }) => {
                                 <button 
                                     onClick={generatePlan} 
                                     disabled={loading || !guests} 
-                                    className="w-full py-4 bg-flag-red-2 text-old-lace font-bold rounded-xl hover:bg-flag-red disabled:opacity-70 disabled:cursor-not-allowed mt-4 flex justify-center items-center gap-2 shadow-xl shadow-flag-red/10 transition-all active:scale-95"
+                                    className="w-full py-4 bg-slate-900 text-white font-bold rounded-xl hover:bg-slate-800 disabled:opacity-70 disabled:cursor-not-allowed mt-4 flex justify-center items-center gap-2 shadow-xl shadow-slate-900/10 transition-all active:scale-95"
                                 >
                                     {loading ? (
                                         <>
@@ -266,11 +268,11 @@ export const AIPlanner = ({ onClose }) => {
                                 className="space-y-5"
                             >
                                 {/* AI Summary */}
-                                <div className="bg-almond-silk/30 p-4 rounded-xl border border-almond-silk flex gap-3 items-start">
+                                <div className="bg-old-lace p-4 rounded-xl border border-almond-silk flex gap-3 items-start">
                                     <Sparkles className="text-flag-red flex-shrink-0 mt-1" size={18}/>
                                     <div>
-                                        <h4 className="font-bold text-flag-red-2 text-sm mb-1 font-pirata tracking-wide">AI Recommendation</h4>
-                                        <p className="text-sm text-tomato-jam italic leading-relaxed">"{result?.summary}"</p>
+                                        <h4 className="font-bold text-slate-900 text-sm mb-1">AI Recommendation</h4>
+                                        <p className="text-sm text-slate-600 italic leading-relaxed">"{result?.summary}"</p>
                                     </div>
                                 </div>
 
@@ -280,29 +282,29 @@ export const AIPlanner = ({ onClose }) => {
                                     const item = firestoreMenu.find(m => m.id === rec.id);
                                     if(!item) return null;
                                     return (
-                                      <div key={i} className="flex gap-3 bg-white p-3 rounded-xl border border-almond-silk shadow-sm hover:shadow-md transition-shadow">
-                                        <div className="w-16 h-16 bg-almond-silk rounded-lg overflow-hidden flex-shrink-0 relative">
+                                      <div key={i} className="flex gap-3 bg-white p-3 rounded-xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
+                                        <div className="w-16 h-16 bg-old-lace rounded-lg overflow-hidden flex-shrink-0 relative">
                                             {/* Anda perlu memastikan item.image ada di database atau set placeholder */}
                                             <img src={item.image || `https://placehold.co/64x64/E0E7FF/4F46E5?text=${item.name.charAt(0)}`} alt={item.name} className="w-full h-full object-cover mix-blend-multiply"/>
                                         </div>
                                         <div className="flex-grow">
                                           <div className="flex justify-between items-start">
-                                             <h4 className="text-flag-red-2 font-bold text-sm line-clamp-1">{item.name}</h4>
-                                             <span className="text-xs font-mono font-bold text-tomato-jam whitespace-nowrap ml-2">
+                                             <h4 className="text-slate-900 font-bold text-sm line-clamp-1">{item.name}</h4>
+                                             <span className="text-xs font-mono font-bold text-slate-500 whitespace-nowrap ml-2">
                                                 {formatBND ? formatBND(item.price * rec.quantity) : `$${item.price * rec.quantity}`}
                                              </span>
                                           </div>
                                           
                                           {/* Menampilkan Varian yang dipilih AI */}
                                           {rec.selectedOption && (
-                                              <div className="text-[10px] uppercase tracking-wider text-flag-red-2 font-bold bg-almond-silk inline-block px-1.5 py-0.5 rounded mt-1 border border-almond-silk">
+                                              <div className="text-[10px] uppercase tracking-wider text-flag-red font-bold bg-almond-silk inline-block px-1.5 py-0.5 rounded mt-1 border border-almond-silk">
                                                   {rec.selectedOption}
                                               </div>
                                           )}
 
                                           <div className="flex justify-between items-end mt-2">
-                                             <p className="text-xs text-tomato-jam/70 italic leading-tight line-clamp-1 mr-2">{rec.reason}</p>
-                                             <div className="bg-flag-red-2 text-white text-xs font-bold px-2 py-1 rounded-md shadow-sm">
+                                             <p className="text-xs text-slate-400 italic leading-tight line-clamp-1 mr-2">{rec.reason}</p>
+                                             <div className="bg-slate-900 text-white text-xs font-bold px-2 py-1 rounded-md shadow-sm">
                                                 x{rec.quantity}
                                              </div>
                                           </div>
@@ -313,16 +315,16 @@ export const AIPlanner = ({ onClose }) => {
                                 </div>
 
                                 {/* Action Buttons */}
-                                <div className="flex gap-3 pt-4 sticky bottom-0 bg-white pb-2 border-t border-almond-silk mt-2">
+                                <div className="flex gap-3 pt-4 sticky bottom-0 bg-white pb-2 border-t border-old-lace mt-2">
                                     <button 
                                         onClick={() => setStep(1)} 
-                                        className="flex-1 py-3 bg-almond-silk text-tomato-jam font-bold rounded-xl hover:bg-almond-silk/80 transition-colors flex justify-center items-center gap-2"
+                                        className="flex-1 py-3 bg-old-lace text-slate-600 font-bold rounded-xl hover:bg-almond-silk transition-colors flex justify-center items-center gap-2"
                                     >
                                         <ChevronLeft size={18}/> Retry
                                     </button>
                                     <button 
                                         onClick={handleAccept} 
-                                        className="flex-[2] py-3 bg-flag-red-2 text-old-lace font-bold rounded-xl hover:bg-flag-red transition-all flex justify-center items-center gap-2 shadow-lg active:scale-95"
+                                        className="flex-[2] py-3 bg-slate-900 text-white font-bold rounded-xl hover:bg-flag-red transition-all flex justify-center items-center gap-2 shadow-lg active:scale-95"
                                     >
                                         <CheckCircle size={18}/> Add All to Tray
                                     </button>
