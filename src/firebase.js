@@ -1,6 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore"; 
 import { getAuth } from "firebase/auth"; 
+import { getStorage } from "firebase/storage";
 
 // Pastikan variabel lingkungan (environment variables) diatur dengan benar di file .env Anda
 const firebaseConfig = {
@@ -19,6 +20,7 @@ const app = initializeApp(firebaseConfig);
 // Inisiasi Layanan yang dibutuhkan
 const db = getFirestore(app); // Firestore Database
 const auth = getAuth(app); // Firebase Authentication
+const storage = getStorage(app); // Firebase Storage
 
 export default app;
-export { db, auth }; // EKSPORT db DAN auth
+export { db, auth, storage }; // EKSPORT db, auth, dan storage

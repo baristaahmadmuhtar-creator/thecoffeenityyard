@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { db } from './firebase'; 
 import { collection, writeBatch, doc } from 'firebase/firestore';
 import { MENU_ITEMS } from './data/menuData'; 
-import { Loader2, Database, ShieldAlert, Lock, Unlock } from 'lucide-react';
+import { Loader2, Database, ShieldAlert, Lock, Unlock, CheckCircle, AlertTriangle } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export const MigrateMenu = () => {
@@ -17,18 +17,18 @@ export const MigrateMenu = () => {
     e.preventDefault();
     if (pin === SECRET_PIN) {
         setIsAuthenticated(true);
-        toast.success("Akses Diberikan! Hati-hati.", { icon: '🔓' });
+        toast.success("System Unlocked", { icon: '🔓' });
     } else {
-        toast.error("PIN SALAH! Akses Ditolak.", { icon: '⛔' });
+        toast.error("Access Denied", { icon: '⛔' });
         setPin("");
     }
   };
 
   const uploadData = async () => {
-    if (!window.confirm("⚠️ PERINGATAN KERAS ⚠️\n\nTindakan ini akan menimpa database dengan data menu awal.\nApakah Anda yakin 100%?")) return;
+    if (!window.confirm("⚠️ CRITICAL WARNING ⚠️\n\nThis will OVERWRITE existing menu data with the local template.\nAre you absolutely sure?")) return;
 
     setLoading(true);
-    setStatus("Sedang menghubungkan ke server...");
+    setStatus("Connecting to Firestore...");
     
     const batch = writeBatch(db);
     const menuRef = collection(db, "menu");
@@ -47,39 +47,45 @@ export const MigrateMenu = () => {
       });
 
       await batch.commit();
-      setStatus("Sukses! Semua menu sudah masuk database. SANGAT DISARANKAN: Hapus rute /migrate sekarang.");
+      setStatus("Migration Successful. Please delete this route.");
       setLoading(false);
-      toast.success("Database berhasil di-update!");
+      toast.success("Database Updated Successfully!");
     } catch (error) {
       console.error("Error:", error);
-      setStatus("Gagal: " + error.message);
+      setStatus("Failed: " + error.message);
       setLoading(false);
-      toast.error("Terjadi kesalahan sistem.");
+      toast.error("System Error");
     }
   };
 
   if (!isAuthenticated) {
     return (
-        <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4">
-            <form onSubmit={handleUnlock} className="bg-slate-800 p-8 rounded-3xl shadow-2xl border border-slate-700 w-full max-w-sm text-center space-y-6">
-                <div className="bg-red-500/10 p-4 rounded-full w-20 h-20 mx-auto flex items-center justify-center border-2 border-red-500/50">
-                    <Lock size={40} className="text-red-500" />
+        <div className="min-h-screen bg-old-lace flex items-center justify-center p-4 relative overflow-hidden">
+            {/* Background Decor matching AdminGuard */}
+            <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-almond-silk/40 rounded-full blur-[80px]"></div>
+            <div className="absolute bottom-[-10%] right-[-10%] w-[400px] h-[400px] bg-flag-red/5 rounded-full blur-[80px]"></div>
+
+            <form onSubmit={handleUnlock} className="bg-white/80 backdrop-blur-xl p-10 rounded-[2.5rem] shadow-2xl border border-white/50 w-full max-w-sm text-center space-y-8 relative z-10 animate-in zoom-in-95 duration-300">
+                <div className="bg-red-50 p-6 rounded-3xl w-24 h-24 mx-auto flex items-center justify-center border border-red-100 shadow-inner">
+                    <ShieldAlert size={40} className="text-flag-red" />
                 </div>
                 <div>
-                    <h2 className="text-2xl font-black text-white mb-2">Restricted Area</h2>
-                    <p className="text-slate-400 text-sm">Halaman ini berbahaya karena dapat mereset database. Masukkan PIN Admin.</p>
+                    <h2 className="text-3xl font-black text-slate-900 mb-2 font-heading">Restricted Area</h2>
+                    <p className="text-slate-500 text-sm font-medium">Database Migration Tool.<br/>Authorized Personnel Only.</p>
                 </div>
                 
-                <input 
-                    type="password" 
-                    maxLength={6}
-                    placeholder="Enter 6-Digit PIN"
-                    value={pin}
-                    onChange={(e) => setPin(e.target.value.replace(/\D/g, ''))}
-                    className="w-full text-center text-3xl font-black tracking-[0.5em] p-4 rounded-xl bg-slate-900 border border-slate-600 text-white focus:border-red-500 focus:ring-1 focus:ring-red-500 outline-none transition-all placeholder:text-slate-700 placeholder:text-sm placeholder:tracking-normal"
-                />
+                <div className="relative">
+                    <input 
+                        type="password" 
+                        maxLength={6}
+                        placeholder="••••••"
+                        value={pin}
+                        onChange={(e) => setPin(e.target.value.replace(/\D/g, ''))}
+                        className="w-full text-center text-4xl font-black tracking-[0.5em] p-4 rounded-2xl bg-white border border-slate-200 text-slate-900 focus:border-flag-red focus:ring-4 focus:ring-flag-red/10 outline-none transition-all placeholder:text-slate-200 shadow-sm"
+                    />
+                </div>
 
-                <button type="submit" className="w-full py-4 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl transition-all shadow-lg shadow-red-900/20">
+                <button type="submit" className="w-full py-4 bg-slate-900 hover:bg-flag-red text-white font-bold rounded-2xl transition-all shadow-xl hover:shadow-flag-red/30 active:scale-95">
                     UNLOCK SYSTEM
                 </button>
             </form>
@@ -88,49 +94,55 @@ export const MigrateMenu = () => {
   }
 
   return (
-    <div className="p-10 bg-amber-50 min-h-screen flex flex-col items-center justify-center border-8 border-slate-900">
-      <div className="bg-white p-8 rounded-2xl shadow-xl max-w-md w-full text-center border border-amber-100 relative overflow-hidden">
-        <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-red-500 via-amber-500 to-red-500"></div>
+    <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-4 border-[10px] border-slate-900">
+      <div className="bg-white p-8 md:p-12 rounded-[2.5rem] shadow-2xl max-w-lg w-full text-center border border-slate-100 relative overflow-hidden">
+        {/* Caution Strip */}
+        <div className="absolute top-0 left-0 w-full h-3 bg-stripes-red"></div>
         
-        <Unlock size={48} className="text-green-500 mx-auto mb-4"/>
-        <h2 className="text-2xl font-black text-slate-900 mb-2">System Unlocked</h2>
-        <div className="bg-yellow-50 text-yellow-800 text-xs p-3 rounded-lg font-bold mb-6 border border-yellow-200">
-            ⚠ MODE MIGRASI AKTIF. Hati-hati dalam menekan tombol.
+        <div className="mb-8">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-100 text-green-800 rounded-full font-bold text-xs uppercase tracking-widest mb-6">
+                <Unlock size={14}/> System Unlocked
+            </div>
+            <h2 className="text-3xl font-black text-slate-900 mb-4 font-heading">Database Migration</h2>
+            <div className="bg-amber-50 text-amber-900 p-4 rounded-2xl text-left text-sm font-medium border border-amber-100 flex gap-3 items-start">
+                <AlertTriangle className="shrink-0 mt-0.5" size={18}/>
+                <p>Running this tool will <strong>overwrite</strong> existing menu items in Firestore with data from <code>menuData.js</code> based on ID match.</p>
+            </div>
         </div>
         
-        <p className="text-slate-500 mb-6 text-sm">
-          Klik tombol di bawah ini untuk meng-upload <code>menuData.js</code> ke Firebase. Data lama yang memiliki ID sama akan ditimpa.
-        </p>
-        
-        <button 
-          onClick={uploadData}
-          disabled={loading || status.includes("Sukses")}
-          className={`px-6 py-4 rounded-xl font-bold transition w-full flex justify-center items-center gap-2 shadow-xl ${
-            loading 
-            ? 'bg-slate-400 text-white cursor-wait' 
-            : status.includes("Sukses") 
-              ? 'bg-green-600 text-white cursor-default'
-              : 'bg-slate-900 text-white hover:bg-red-600'
-          }`}
-        >
-          {loading ? (
-            <><Loader2 className="animate-spin" size={20} /> Memproses Data...</>
-          ) : status.includes("Sukses") ? (
-            "✅ Migration Complete"
-          ) : (
-            <><Database size={20} /> EKSEKUSI MIGRASI</>
-          )}
-        </button>
+        <div className="space-y-4">
+            <button 
+            onClick={uploadData}
+            disabled={loading || status.includes("Successful")}
+            className={`w-full py-5 rounded-2xl font-bold text-lg transition-all shadow-xl flex justify-center items-center gap-3 ${
+                loading 
+                ? 'bg-slate-100 text-slate-400 cursor-wait' 
+                : status.includes("Successful") 
+                ? 'bg-green-500 text-white cursor-default shadow-green-500/20'
+                : 'bg-slate-900 text-white hover:bg-flag-red hover:shadow-flag-red/20 active:scale-95'
+            }`}
+            >
+            {loading ? (
+                <><Loader2 className="animate-spin" size={24} /> Processing...</>
+            ) : status.includes("Successful") ? (
+                <><CheckCircle size={24}/> Migration Complete</>
+            ) : (
+                <><Database size={24} /> EXECUTE MIGRATION</>
+            )}
+            </button>
 
-        {status.includes("Sukses") && (
-          <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-xl">
-             <p className="text-green-700 font-bold text-sm">✅ Selesai. Segera tutup halaman ini.</p>
-          </div>
-        )}
-        
-        {status.includes("Gagal") && (
-          <p className="mt-4 text-red-600 font-bold bg-red-50 p-2 rounded">❌ {status}</p>
-        )}
+            {status.includes("Successful") && (
+                <div className="animate-in fade-in slide-in-from-bottom-2">
+                    <p className="text-slate-400 text-xs mt-4">Safe to close this window.</p>
+                </div>
+            )}
+            
+            {status.includes("Failed") && (
+                <div className="p-4 bg-red-50 text-red-600 rounded-xl font-bold border border-red-100 mt-4 text-sm break-words">
+                    Error: {status}
+                </div>
+            )}
+        </div>
       </div>
     </div>
   );

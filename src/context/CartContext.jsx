@@ -1,20 +1,40 @@
-import React, { createContext, useContext, useState, useMemo } from 'react';
+import React, { createContext, useContext, useState, useMemo, useEffect, useCallback } from 'react';
 import toast from 'react-hot-toast';
 
 const CartContext = createContext();
 
+const CART_STORAGE_KEY = 'coffeennity_cart_v1';
+
 export const useCart = () => useContext(CartContext);
 
 export const CartProvider = ({ children }) => {
-  const [cart, setCart] = useState([]);
+  // Initialize cart from LocalStorage
+  const [cart, setCart] = useState(() => {
+    try {
+      const savedCart = localStorage.getItem(CART_STORAGE_KEY);
+      return savedCart ? JSON.parse(savedCart) : [];
+    } catch (error) {
+      console.error("Failed to load cart from storage:", error);
+      return [];
+    }
+  });
 
-  const formatBND = (amount) => {
+  // Persist cart to LocalStorage whenever it changes
+  useEffect(() => {
+    try {
+      localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart));
+    } catch (error) {
+      console.error("Failed to save cart to storage:", error);
+    }
+  }, [cart]);
+
+  const formatBND = useCallback((amount) => {
     return new Intl.NumberFormat('en-BN', {
       style: 'currency',
       currency: 'BND',
       minimumFractionDigits: 2,
     }).format(amount);
-  };
+  }, []);
 
   const cartTotal = useMemo(() => 
     cart.reduce((total, item) => total + item.price * item.quantity, 0),
@@ -26,12 +46,10 @@ export const CartProvider = ({ children }) => {
     [cart]
   );
 
-  // UPDATE: Parameter 'customPrice' ditambahkan di sini
-  const addToCart = (item, qty, selectedOption = null, customPrice = null) => {
+  const addToCart = useCallback((item, qty, selectedOption = null, customPrice = null) => {
     const cartId = selectedOption ? `${item.id}-${selectedOption}` : `${item.id}`;
     const itemName = selectedOption ? `${item.name} (${selectedOption})` : item.name;
     
-    // Gunakan customPrice jika ada (untuk Pizza $12 atau Mix), jika tidak pakai harga default
     const finalPrice = customPrice !== null ? customPrice : item.price;
 
     setCart(prevCart => {
@@ -46,7 +64,6 @@ export const CartProvider = ({ children }) => {
              iconTheme: { primary: '#d97706', secondary: '#fff' },
         });
 
-        // Update quantity DAN pastikan harga terupdate
         return prevCart.map(i =>
           i.cartId === cartId ? { ...i, quantity: newQty, price: finalPrice } : i
         );
@@ -56,7 +73,7 @@ export const CartProvider = ({ children }) => {
             cartId, 
             name: itemName,
             quantity: quantityToAdd,
-            price: finalPrice, // Simpan harga custom
+            price: finalPrice, 
             selectedOption 
         };
 
@@ -68,9 +85,9 @@ export const CartProvider = ({ children }) => {
         return [...prevCart, newItem];
       }
     });
-  };
+  }, []);
 
-  const updateQuantity = (cartId, delta) => {
+  const updateQuantity = useCallback((cartId, delta) => {
     setCart(prevCart => {
       const itemToUpdate = prevCart.find(i => i.cartId === cartId);
       if (!itemToUpdate) return prevCart;
@@ -86,16 +103,21 @@ export const CartProvider = ({ children }) => {
         i.cartId === cartId ? { ...i, quantity: newQty } : i
       );
     });
-  };
+  }, []);
 
-  const removeFromCart = (cartId) => {
+  const removeFromCart = useCallback((cartId) => {
     setCart(prevCart => prevCart.filter(item => item.cartId !== cartId));
     toast.success("Item removed from cart.");
-  };
+  }, []);
 
-  const clearCart = () => setCart([]);
+  const clearCart = useCallback(() => {
+    if (window.confirm("Are you sure you want to clear your tray?")) {
+      setCart([]);
+      toast.success("Tray cleared.");
+    }
+  }, []);
   
-  const value = {
+  const value = useMemo(() => ({
     cart,
     cartTotal,
     cartCount,
@@ -104,7 +126,7 @@ export const CartProvider = ({ children }) => {
     updateQuantity,
     removeFromCart,
     clearCart,
-  };
+  }), [cart, cartTotal, cartCount, formatBND, addToCart, updateQuantity, removeFromCart, clearCart]);
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 };

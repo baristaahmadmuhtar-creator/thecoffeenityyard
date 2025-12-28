@@ -21,8 +21,20 @@ export const useMenu = () => {
             ...doc.data() 
           }));
           
-          // Sort by Numeric ID to ensure consistent ordering
-          rawData.sort((a, b) => (Number(a.id) || 9999) - (Number(b.id) || 9999));
+          // Sort by ID to ensure consistent ordering
+          // Handles both numeric IDs ("101") and String IDs ("ITEM-123")
+          rawData.sort((a, b) => {
+              // Try to extract number from ID if possible
+              const numA = parseFloat(a.id.replace(/[^0-9.]/g, ''));
+              const numB = parseFloat(b.id.replace(/[^0-9.]/g, ''));
+
+              // If both are valid numbers, sort numerically
+              if (!isNaN(numA) && !isNaN(numB)) {
+                  return numA - numB;
+              }
+              // Otherwise fallback to string comparison
+              return String(a.id).localeCompare(String(b.id), undefined, { numeric: true, sensitivity: 'base' });
+          });
 
           setMenuItems(rawData);
           setLoadingMenu(false);
