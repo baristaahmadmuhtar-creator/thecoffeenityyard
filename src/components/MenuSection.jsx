@@ -201,127 +201,34 @@ const MenuListItem = memo(({ item, onAdd, onViewDetails, formatBND }) => {
     );
 });
 
-// --- NEW COMPONENT: PRODUCT DETAIL MODAL (THE "WINDOW" FOR PACKAGES) ---
+// ... [ProductDetailModal and OptionModal components remain unchanged] ...
+// (Omitting for brevity as they don't contain logic changes, but assume they are included in full file)
+// --- RE-INSERTING MODALS TO ENSURE FILE IS COMPLETE ---
 const ProductDetailModal = ({ item, isOpen, onClose, onAdd, formatBND }) => {
-    // Lock body scroll when this modal is open
     useBodyScrollLock(isOpen);
-
     if (!isOpen || !item) return null;
-
     const isBundle = item.mixLimit && Number(item.mixLimit) > 1;
     const isOutOfStock = item.stock <= 0;
-
     return (
         <AnimatePresence>
             <div className="fixed inset-0 z-[100] flex items-end md:items-center justify-center p-0 md:p-4">
-                <motion.div 
-                    initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                    className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={onClose}
-                />
-                
-                <motion.div 
-                    initial={{ y: '100%' }} 
-                    animate={{ y: 0 }} 
-                    exit={{ y: '100%' }}
-                    transition={{ type: "spring", damping: 25, stiffness: 300 }}
-                    // Disable drag on Desktop to prevent accidental closes when selecting text
-                    drag={window.innerWidth < 768 ? "y" : false}
-                    dragConstraints={{ top: 0, bottom: 0 }}
-                    dragElastic={{ top: 0, bottom: 0.2 }}
-                    onDragEnd={(e, { offset, velocity }) => {
-                        if (offset.y > 100 || velocity.y > 100) onClose();
-                    }}
-                    className="bg-white w-full md:max-w-4xl rounded-t-[2.5rem] md:rounded-[2.5rem] shadow-2xl relative z-10 flex flex-col md:flex-row h-[90dvh] md:h-auto md:max-h-[85vh] overflow-hidden md:border border-white/50"
-                >
-                    {/* Mobile Drag Handle */}
-                    <div className="md:hidden w-full flex justify-center pt-3 pb-1 absolute top-0 left-0 z-20" onClick={onClose}>
-                        <div className="w-12 h-1.5 bg-slate-300 rounded-full shadow-sm" />
-                    </div>
-
-                    {/* Image Area - Full Height on Desktop */}
+                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={onClose} />
+                <motion.div initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }} transition={{ type: "spring", damping: 25, stiffness: 300 }} drag={window.innerWidth < 768 ? "y" : false} dragConstraints={{ top: 0, bottom: 0 }} dragElastic={{ top: 0, bottom: 0.2 }} onDragEnd={(e, { offset, velocity }) => { if (offset.y > 100 || velocity.y > 100) onClose(); }} className="bg-white w-full md:max-w-4xl rounded-t-[2.5rem] md:rounded-[2.5rem] shadow-2xl relative z-10 flex flex-col md:flex-row h-[90dvh] md:h-auto md:max-h-[85vh] overflow-hidden md:border border-white/50">
+                    <div className="md:hidden w-full flex justify-center pt-3 pb-1 absolute top-0 left-0 z-20" onClick={onClose}><div className="w-12 h-1.5 bg-slate-300 rounded-full shadow-sm" /></div>
                     <div className="relative h-64 md:h-auto md:w-1/2 bg-old-lace shrink-0">
-                        <img 
-                            src={item.image} 
-                            alt={item.name} 
-                            className="w-full h-full object-cover mix-blend-multiply"
-                            onError={e => e.target.src="https://placehold.co/600x400/FDF2E3/CA222A?text=Image+Unavailable"}
-                        />
-                        {/* Desktop Close Button (inside image area for aesthetics) */}
-                        <button onClick={onClose} className="absolute top-4 right-4 p-2 bg-white/80 backdrop-blur rounded-full hover:bg-white hover:text-red-500 transition-colors shadow-sm z-30">
-                            <X size={24} className="text-slate-900"/>
-                        </button>
-                        
-                        {item.badge && (
-                            <div className="absolute top-4 left-4 bg-slate-900/90 backdrop-blur text-white px-4 py-2 rounded-full font-bold text-xs uppercase tracking-widest shadow-lg z-20">
-                                {item.badge}
-                            </div>
-                        )}
+                        <img src={item.image} alt={item.name} className="w-full h-full object-cover mix-blend-multiply" onError={e => e.target.src="https://placehold.co/600x400/FDF2E3/CA222A?text=Image+Unavailable"}/>
+                        <button onClick={onClose} className="absolute top-4 right-4 p-2 bg-white/80 backdrop-blur rounded-full hover:bg-white hover:text-red-500 transition-colors shadow-sm z-30"><X size={24} className="text-slate-900"/></button>
+                        {item.badge && (<div className="absolute top-4 left-4 bg-slate-900/90 backdrop-blur text-white px-4 py-2 rounded-full font-bold text-xs uppercase tracking-widest shadow-lg z-20">{item.badge}</div>)}
                     </div>
-
-                    {/* Content Area - Right Side on Desktop */}
                     <div className="flex flex-col md:w-1/2 h-full bg-white relative">
                         <div className="p-8 overflow-y-auto custom-scrollbar flex-grow">
                             <div className="flex flex-col justify-between items-start gap-2 mb-6">
-                                <div>
-                                    <h2 className="text-3xl md:text-4xl font-heading text-slate-900 leading-none mb-3">{item.name}</h2>
-                                    <div className="flex flex-wrap gap-2">
-                                        <span className="bg-old-lace text-slate-600 px-3 py-1 rounded-lg text-xs font-bold uppercase tracking-wider">{item.category}</span>
-                                        {isBundle && (
-                                            <span className="bg-purple-50 text-purple-600 px-3 py-1 rounded-lg text-xs font-bold uppercase tracking-wider flex items-center gap-1">
-                                                <Layers size={12}/> Potluck Package
-                                            </span>
-                                        )}
-                                    </div>
-                                </div>
-                                <div className="mt-4 pb-4 border-b border-dashed border-slate-200 w-full">
-                                    <span className="block text-4xl font-black text-flag-red tracking-tight">{formatBND(item.price)}</span>
-                                    <span className="text-slate-400 font-bold text-xs uppercase">Price per {item.unit}</span>
-                                </div>
+                                <div><h2 className="text-3xl md:text-4xl font-heading text-slate-900 leading-none mb-3">{item.name}</h2><div className="flex flex-wrap gap-2"><span className="bg-old-lace text-slate-600 px-3 py-1 rounded-lg text-xs font-bold uppercase tracking-wider">{item.category}</span>{isBundle && (<span className="bg-purple-50 text-purple-600 px-3 py-1 rounded-lg text-xs font-bold uppercase tracking-wider flex items-center gap-1"><Layers size={12}/> Potluck Package</span>)}</div></div>
+                                <div className="mt-4 pb-4 border-b border-dashed border-slate-200 w-full"><span className="block text-4xl font-black text-flag-red tracking-tight">{formatBND(item.price)}</span><span className="text-slate-400 font-bold text-xs uppercase">Price per {item.unit}</span></div>
                             </div>
-
-                            <div className="space-y-6">
-                                <div>
-                                    <h4 className="font-bold text-slate-900 flex items-center gap-2 mb-2 text-sm uppercase tracking-wide">
-                                        <Info size={16} className="text-flag-red"/> Description
-                                    </h4>
-                                    <p className="text-slate-600 leading-relaxed font-medium">
-                                        {item.description}
-                                    </p>
-                                </div>
-
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100 flex items-center gap-3">
-                                        <div className="bg-white p-2 rounded-xl text-blue-600 shadow-sm"><Users size={20}/></div>
-                                        <div>
-                                            <p className="text-[10px] text-slate-400 font-bold uppercase">Min Order</p>
-                                            <p className="font-bold text-slate-900">{item.minQty} {item.unit}</p>
-                                        </div>
-                                    </div>
-                                    <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100 flex items-center gap-3">
-                                        <div className="bg-white p-2 rounded-xl text-orange-600 shadow-sm"><Clock size={20}/></div>
-                                        <div>
-                                            <p className="text-[10px] text-slate-400 font-bold uppercase">Prep Time</p>
-                                            <p className="font-bold text-slate-900">{item.prepTime || 24} Hours</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                            <div className="space-y-6"><div><h4 className="font-bold text-slate-900 flex items-center gap-2 mb-2 text-sm uppercase tracking-wide"><Info size={16} className="text-flag-red"/> Description</h4><p className="text-slate-600 leading-relaxed font-medium">{item.description}</p></div><div className="grid grid-cols-2 gap-4"><div className="p-4 rounded-2xl bg-slate-50 border border-slate-100 flex items-center gap-3"><div className="bg-white p-2 rounded-xl text-blue-600 shadow-sm"><Users size={20}/></div><div><p className="text-[10px] text-slate-400 font-bold uppercase">Min Order</p><p className="font-bold text-slate-900">{item.minQty} {item.unit}</p></div></div><div className="p-4 rounded-2xl bg-slate-50 border border-slate-100 flex items-center gap-3"><div className="bg-white p-2 rounded-xl text-orange-600 shadow-sm"><Clock size={20}/></div><div><p className="text-[10px] text-slate-400 font-bold uppercase">Prep Time</p><p className="font-bold text-slate-900">{item.prepTime || 24} Hours</p></div></div></div></div>
                         </div>
-
-                        {/* Footer Action */}
-                        <div className="p-6 border-t border-slate-100 bg-white z-10 shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.05)] pb-safe-bottom">
-                            <button 
-                                onClick={() => { onAdd(item); onClose(); }}
-                                disabled={isOutOfStock}
-                                className={`w-full py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-2 transition-all shadow-lg ${
-                                    isOutOfStock 
-                                    ? 'bg-slate-200 text-slate-400 cursor-not-allowed' 
-                                    : 'bg-slate-900 text-white hover:bg-flag-red hover:shadow-flag-red/20 active:scale-95'
-                                }`}
-                            >
-                                {isOutOfStock ? 'Sold Out' : (isBundle ? <><UtensilsCrossed size={20}/> Configure Package</> : <><ShoppingBag size={20}/> Add to Tray</>)}
-                            </button>
-                        </div>
+                        <div className="p-6 border-t border-slate-100 bg-white z-10 shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.05)] pb-safe-bottom"><button onClick={() => { onAdd(item); onClose(); }} disabled={isOutOfStock} className={`w-full py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-2 transition-all shadow-lg ${isOutOfStock ? 'bg-slate-200 text-slate-400 cursor-not-allowed' : 'bg-slate-900 text-white hover:bg-flag-red hover:shadow-flag-red/20 active:scale-95'}`}>{isOutOfStock ? 'Sold Out' : (isBundle ? <><UtensilsCrossed size={20}/> Configure Package</> : <><ShoppingBag size={20}/> Add to Tray</>)}</button></div>
                     </div>
                 </motion.div>
             </div>
@@ -332,113 +239,23 @@ const ProductDetailModal = ({ item, isOpen, onClose, onAdd, formatBND }) => {
 const OptionModal = ({ item, isOpen, onClose, onConfirm, onMixSelect }) => {
     const [selected, setSelected] = useState('');
     const [qty, setQty] = useState(1);
-
-    // Lock Scroll
     useBodyScrollLock(isOpen);
-
-    useEffect(() => {
-        if (item) {
-            setQty(item.minQty || 1);
-            setSelected(item.options?.choices?.[0] || '');
-        }
-    }, [item]);
-
-    // Handle haptic feedback
-    const handleSelect = (choice) => {
-        setSelected(choice);
-        if (navigator.vibrate) navigator.vibrate(10);
-    };
-
+    useEffect(() => { if (item) { setQty(item.minQty || 1); setSelected(item.options?.choices?.[0] || ''); } }, [item]);
+    const handleSelect = (choice) => { setSelected(choice); if (navigator.vibrate) navigator.vibrate(10); };
     if (!isOpen || !item || !item.options || !item.options.choices) return null;
-
-    const handleConfirm = () => {
-        if (selected.toLowerCase() === 'mixed' || selected.toLowerCase() === 'mix') {
-            onMixSelect(item);
-        } else {
-            onConfirm(selected, qty);
-        }
-    };
-
+    const handleConfirm = () => { if (selected.toLowerCase() === 'mixed' || selected.toLowerCase() === 'mix') { onMixSelect(item); } else { onConfirm(selected, qty); } };
     const increaseQty = () => { setQty(q => q + 1); if(navigator.vibrate) navigator.vibrate(5); };
     const decreaseQty = () => { setQty(q => (q > (item.minQty || 1) ? q - 1 : q)); if(navigator.vibrate) navigator.vibrate(5); };
     const isMixSelected = selected.toLowerCase() === 'mixed' || selected.toLowerCase() === 'mix';
-
     return (
         <AnimatePresence>
             <div className="fixed inset-0 z-[100] flex items-end md:items-center justify-center p-0 md:p-4">
-                <motion.div 
-                    initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                    className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={onClose}
-                />
-                <motion.div 
-                    initial={{ y: '100%' }} 
-                    animate={{ y: 0 }} 
-                    exit={{ y: '100%' }} 
-                    transition={{ type: "spring", damping: 25, stiffness: 300 }}
-                    drag={window.innerWidth < 768 ? "y" : false}
-                    dragConstraints={{ top: 0, bottom: 0 }}
-                    dragElastic={{ top: 0, bottom: 0.2 }}
-                    onDragEnd={(e, { offset, velocity }) => {
-                        if (offset.y > 100 || velocity.y > 100) onClose();
-                    }}
-                    className="bg-old-lace w-full md:max-w-sm rounded-t-[2rem] md:rounded-[2rem] shadow-2xl z-10 overflow-hidden border-t md:border border-white/50 max-h-[85vh] flex flex-col relative"
-                    role="dialog"
-                    aria-modal="true"
-                >
-                    {/* Mobile Drag Handle */}
-                    <div className="md:hidden w-full flex justify-center pt-3 pb-1" onClick={onClose}>
-                        <div className="w-12 h-1.5 bg-slate-300 rounded-full" />
-                    </div>
-
-                    <div className="p-6 pb-4 flex justify-between items-center bg-old-lace sticky top-0 z-20 border-b border-almond-silk/50 shrink-0">
-                        <div className="pr-4">
-                            <h3 className="font-heading text-2xl text-slate-900 leading-none">{item.name}</h3>
-                            <p className="text-flag-red font-bold text-xs uppercase tracking-widest mt-1">{item.options.title || 'Select Options'}</p>
-                        </div>
-                        <button onClick={onClose} className="p-2 bg-white hover:bg-almond-silk rounded-full transition-colors text-slate-400 hover:text-slate-900 shadow-sm" aria-label="Close"><X size={20}/></button>
-                    </div>
-                    
-                    <div className="p-6 pt-4 space-y-3 overflow-y-auto custom-scrollbar flex-grow bg-old-lace">
-                        {item.options.choices.map((choice) => (
-                            <motion.div 
-                                key={choice}
-                                whileTap={{ scale: 0.98 }}
-                                onClick={() => handleSelect(choice)}
-                                className={`p-4 rounded-xl cursor-pointer flex justify-between items-center transition-all duration-200 border-2 ${
-                                    selected === choice 
-                                    ? 'border-flag-red bg-white text-flag-red font-bold shadow-md' 
-                                    : 'border-white bg-white/50 text-slate-600 hover:bg-white hover:border-almond-silk'
-                                }`}
-                            >
-                                <span className="text-sm font-bold">{choice}</span>
-                                {selected === choice && <div className="bg-flag-red text-white p-1 rounded-full"><Check size={14} strokeWidth={4}/></div>}
-                            </motion.div>
-                        ))}
-                    </div>
-
-                    <div className="p-6 pt-4 border-t border-almond-silk/50 bg-white pb-safe-bottom space-y-4 shrink-0 shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.05)]">
-                        {!isMixSelected && (
-                            <div className="flex justify-between items-center bg-old-lace p-2 rounded-xl">
-                                <span className="text-xs font-bold text-slate-500 uppercase tracking-wider pl-3">Quantity</span>
-                                <div className="flex items-center gap-3 bg-white rounded-lg p-1 shadow-sm">
-                                    <button onClick={decreaseQty} disabled={qty <= (item.minQty || 1)} className="w-10 h-10 flex items-center justify-center rounded-md hover:bg-slate-100 transition-colors disabled:opacity-30 text-slate-800 active:scale-90">
-                                        <Minus size={18} strokeWidth={2.5}/>
-                                    </button>
-                                    <span className="w-8 text-center font-black text-lg text-slate-900">{qty}</span>
-                                    <button onClick={increaseQty} className="w-10 h-10 flex items-center justify-center rounded-md hover:bg-slate-100 transition-colors text-slate-800 active:scale-90">
-                                        <Plus size={18} strokeWidth={2.5}/>
-                                    </button>
-                                </div>
-                            </div>
-                        )}
-
-                        <button 
-                            onClick={handleConfirm}
-                            className="w-full py-4 bg-slate-900 hover:bg-flag-red text-white font-bold rounded-xl shadow-lg shadow-slate-900/20 hover:shadow-flag-red/30 transition-all active:scale-95 flex items-center justify-center gap-2 text-lg"
-                        >
-                            {isMixSelected ? 'Start Building Mix' : `Add ${qty} to Tray`}
-                        </button>
-                    </div>
+                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={onClose} />
+                <motion.div initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }} transition={{ type: "spring", damping: 25, stiffness: 300 }} drag={window.innerWidth < 768 ? "y" : false} dragConstraints={{ top: 0, bottom: 0 }} dragElastic={{ top: 0, bottom: 0.2 }} onDragEnd={(e, { offset, velocity }) => { if (offset.y > 100 || velocity.y > 100) onClose(); }} className="bg-old-lace w-full md:max-w-sm rounded-t-[2rem] md:rounded-[2rem] shadow-2xl z-10 overflow-hidden border-t md:border border-white/50 max-h-[85vh] flex flex-col relative" role="dialog" aria-modal="true">
+                    <div className="md:hidden w-full flex justify-center pt-3 pb-1" onClick={onClose}><div className="w-12 h-1.5 bg-slate-300 rounded-full" /></div>
+                    <div className="p-6 pb-4 flex justify-between items-center bg-old-lace sticky top-0 z-20 border-b border-almond-silk/50 shrink-0"><div className="pr-4"><h3 className="font-heading text-2xl text-slate-900 leading-none">{item.name}</h3><p className="text-flag-red font-bold text-xs uppercase tracking-widest mt-1">{item.options.title || 'Select Options'}</p></div><button onClick={onClose} className="p-2 bg-white hover:bg-almond-silk rounded-full transition-colors text-slate-400 hover:text-slate-900 shadow-sm" aria-label="Close"><X size={20}/></button></div>
+                    <div className="p-6 pt-4 space-y-3 overflow-y-auto custom-scrollbar flex-grow bg-old-lace">{item.options.choices.map((choice) => (<motion.div key={choice} whileTap={{ scale: 0.98 }} onClick={() => handleSelect(choice)} className={`p-4 rounded-xl cursor-pointer flex justify-between items-center transition-all duration-200 border-2 ${selected === choice ? 'border-flag-red bg-white text-flag-red font-bold shadow-md' : 'border-white bg-white/50 text-slate-600 hover:bg-white hover:border-almond-silk'}`}><span className="text-sm font-bold">{choice}</span>{selected === choice && <div className="bg-flag-red text-white p-1 rounded-full"><Check size={14} strokeWidth={4}/></div>}</motion.div>))}</div>
+                    <div className="p-6 pt-4 border-t border-almond-silk/50 bg-white pb-safe-bottom space-y-4 shrink-0 shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.05)]">{!isMixSelected && (<div className="flex justify-between items-center bg-old-lace p-2 rounded-xl"><span className="text-xs font-bold text-slate-500 uppercase tracking-wider pl-3">Quantity</span><div className="flex items-center gap-3 bg-white rounded-lg p-1 shadow-sm"><button onClick={decreaseQty} disabled={qty <= (item.minQty || 1)} className="w-10 h-10 flex items-center justify-center rounded-md hover:bg-slate-100 transition-colors disabled:opacity-30 text-slate-800 active:scale-90"><Minus size={18} strokeWidth={2.5}/></button><span className="w-8 text-center font-black text-lg text-slate-900">{qty}</span><button onClick={increaseQty} className="w-10 h-10 flex items-center justify-center rounded-md hover:bg-slate-100 transition-colors text-slate-800 active:scale-90"><Plus size={18} strokeWidth={2.5}/></button></div></div>)}<button onClick={handleConfirm} className="w-full py-4 bg-slate-900 hover:bg-flag-red text-white font-bold rounded-xl shadow-lg shadow-slate-900/20 hover:shadow-flag-red/30 transition-all active:scale-95 flex items-center justify-center gap-2 text-lg">{isMixSelected ? 'Start Building Mix' : `Add ${qty} to Tray`}</button></div>
                 </motion.div>
             </div>
         </AnimatePresence>
@@ -488,20 +305,28 @@ export const MenuSection = ({ onModalChange }) => {
                                 item.name.toLowerCase().includes(searchLower) || 
                                 item.description?.toLowerCase().includes(searchLower);
           
-          // CATEGORY & TAB FILTER
-          let matchesCategory = false;
+          // STRICT TAB SEPARATION LOGIC
+          const itemCategory = item.category || '';
+          
+          // Is it a Potluck item? ONLY if category IS "Potluck" (case-insensitive)
+          const isPotluckCategory = itemCategory.toLowerCase() === 'potluck';
+
+          // Tab Filtering
+          let matchesTab = false;
           if (activeMenuTab === 'potluck') {
-              // Potluck Tab: Show ONLY items with category 'Potluck'
-              matchesCategory = item.category === 'Potluck';
+              matchesTab = isPotluckCategory;
           } else {
-              // Ala Carte Tab: Show everything EXCEPT 'Potluck'
-              if (item.category === 'Potluck') return false; 
-              
-              // Standard category filtering
-              matchesCategory = activeCategory === "All" || item.category === activeCategory;
+              // Ala Carte Tab: Show everything EXCEPT Potluck category
+              matchesTab = !isPotluckCategory;
           }
 
-          return matchesCategory && matchesSearch;
+          // Category Sub-filter (Only for Ala Carte really, as Potluck usually just has one list)
+          let matchesCategoryFilter = true;
+          if (activeMenuTab === 'alacarte') {
+              matchesCategoryFilter = activeCategory === "All" || itemCategory === activeCategory;
+          }
+
+          return matchesTab && matchesCategoryFilter && matchesSearch;
       });
   }, [menuItems, activeCategory, searchTerm, activeMenuTab]);
 
@@ -684,7 +509,7 @@ export const MenuSection = ({ onModalChange }) => {
                         {/* Horizontal Scrollable Categories */}
                         <div className="relative flex-grow min-w-0 bg-white/50 p-1.5 rounded-2xl md:rounded-full border border-white/50 shadow-sm overflow-hidden">
                             <div className="flex gap-1 w-full overflow-x-auto snap-x snap-mandatory scrollbar-hide">
-                                {categories.filter(c => c !== "Potluck").map(cat => (
+                                {categories.filter(c => c.toLowerCase() !== "potluck").map(cat => (
                                 <button
                                     key={cat}
                                     onClick={() => setActiveCategory(cat)}

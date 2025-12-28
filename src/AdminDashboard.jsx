@@ -6,7 +6,7 @@ import {
     Edit, Save, X, Trash2, Plus, Loader2, Search, 
     LayoutGrid, List, Package, AlertTriangle, CheckCircle, 
     Minus, Ban, Tags, Layers, Download, Image as ImageIcon, Camera, Eye, MoreHorizontal, Upload, Link as LinkIcon,
-    Sparkles, Power, EyeOff, Box, Coffee
+    Sparkles, Power, EyeOff, Box, Coffee, Utensils
 } from 'lucide-react'; 
 import toast from 'react-hot-toast';
 import { Link } from 'react-router-dom';
@@ -25,7 +25,7 @@ const StatCard = ({ title, value, icon: Icon, color, shadowColor }) => (
     </div>
 );
 
-const Input = ({ label, type = "text", value, onChange, required = false, isTextArea = false, placeholder = "", ...props }) => (
+const Input = ({ label, type = "text", value, onChange, required = false, isTextArea = false, placeholder = "", disabled = false, ...props }) => (
     <div className="space-y-1.5">
         <label className="text-xs font-bold text-slate-500 uppercase tracking-wide flex gap-1 ml-1">
             {label}{required && <span className="text-red-500">*</span>}
@@ -34,7 +34,8 @@ const Input = ({ label, type = "text", value, onChange, required = false, isText
              <textarea 
                 value={value} 
                 onChange={onChange} 
-                className="w-full p-4 bg-old-lace/50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-flag-red/10 focus:border-flag-red transition outline-none font-medium font-sans"
+                disabled={disabled}
+                className="w-full p-4 bg-old-lace/50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-flag-red/10 focus:border-flag-red transition outline-none font-medium font-sans disabled:opacity-50 disabled:cursor-not-allowed"
                 rows="3"
                 placeholder={placeholder}
                 {...props}
@@ -45,8 +46,9 @@ const Input = ({ label, type = "text", value, onChange, required = false, isText
                 value={value}
                 onChange={onChange}
                 required={required}
+                disabled={disabled}
                 placeholder={placeholder}
-                className="w-full p-4 bg-old-lace/50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-flag-red/10 focus:border-flag-red transition outline-none font-medium font-sans"
+                className="w-full p-4 bg-old-lace/50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-flag-red/10 focus:border-flag-red transition outline-none font-medium font-sans disabled:opacity-50 disabled:cursor-not-allowed"
                 {...props}
             />
         )}
@@ -99,20 +101,49 @@ const CategoryManager = ({ isOpen, onClose, categories, onAdd, onDelete }) => {
 
 const ProductFormModal = ({ isOpen, onClose, initialData, categories, onSubmit }) => {
     const [formData, setFormData] = useState(initialData);
-    const [productType, setProductType] = useState('single'); // 'single' | 'bundle'
+    const [productType, setProductType] = useState('standard'); // 'standard' | 'potluck'
+    const [showBundleSettings, setShowBundleSettings] = useState(false); // Only for 'standard' type advanced use
     const [isUploading, setIsUploading] = useState(false);
 
     useEffect(() => {
         if (isOpen) {
             setFormData(initialData);
-            // Determine type based on mixLimit
-            if (initialData.mixLimit && Number(initialData.mixLimit) > 1) {
-                setProductType('bundle');
+            // Auto-detect type
+            if (initialData.category === 'Potluck') {
+                setProductType('potluck');
             } else {
-                setProductType('single');
+                setProductType('standard');
+                // Check if it was an existing bundle in standard menu
+                if (initialData.mixLimit && Number(initialData.mixLimit) > 1) {
+                    setShowBundleSettings(true);
+                } else {
+                    setShowBundleSettings(false);
+                }
             }
         }
     }, [isOpen, initialData]);
+
+    const handleTypeChange = (type) => {
+        setProductType(type);
+        if (type === 'potluck') {
+            setFormData(prev => ({ 
+                ...prev, 
+                category: 'Potluck', 
+                unit: 'Bundle',
+                mixLimit: prev.mixLimit || 3, // Default for potluck
+                allowDuplicate: true
+            }));
+        } else {
+            // Reverting to standard, set default category if current is Potluck
+            const defaultCat = categories.filter(c => c !== 'Potluck')[0] || 'Foods';
+            setFormData(prev => ({ 
+                ...prev, 
+                category: prev.category === 'Potluck' ? defaultCat : prev.category,
+                unit: 'Set' 
+            }));
+            setShowBundleSettings(false); // Hide by default
+        }
+    };
 
     if (!isOpen) return null;
 
@@ -141,16 +172,17 @@ const ProductFormModal = ({ isOpen, onClose, initialData, categories, onSubmit }
         if (Number(formData.price) < 0) return toast.error("Price cannot be negative");
         if (Number(formData.stock) < 0) return toast.error("Stock cannot be negative");
         
-        // Critical: If type is Bundle, Options are MANDATORY
-        if (productType === 'bundle') {
+        // Critical: If type is Standard Bundle, Options are MANDATORY. 
+        // For Potluck, options are now OPTIONAL based on request.
+        if (productType === 'standard' && showBundleSettings) {
             if (!formData.options || formData.options.trim().length === 0) {
-                return toast.error("For Bundles, you MUST provide 'Package Choices' (e.g. Pizza A, Pizza B) so customers can select.");
+                return toast.error("For Standard Bundles, please provide 'Variations' (e.g. Pizza A, Pizza B).");
             }
         }
 
-        // Prepare payload based on type
+        // Prepare payload
         const submitData = { ...formData };
-        if (productType === 'single') {
+        if (productType === 'standard' && !showBundleSettings) {
             submitData.mixLimit = null;
             submitData.allowDuplicate = true; // Reset default
         }
@@ -166,48 +198,56 @@ const ProductFormModal = ({ isOpen, onClose, initialData, categories, onSubmit }
                  <div className="flex flex-col gap-1 mb-6">
                     <div className="flex items-center gap-3">
                         {formData.id && <div className="px-3 py-1 bg-almond-silk text-flag-red text-xs font-bold rounded-full">Editing Mode</div>}
-                        <h2 className="text-2xl font-black text-slate-900 font-heading">{formData.id ? 'Edit Product' : 'Add New Product'}</h2>
+                        <h2 className="text-2xl font-black text-slate-900 font-heading">{formData.id ? 'Edit Item' : 'Create New Item'}</h2>
                     </div>
                  </div>
 
                  <div className="space-y-6">
                     {/* TYPE TOGGLE */}
-                    <div className="bg-old-lace p-1.5 rounded-2xl flex gap-1 border border-almond-silk/50">
+                    <div className="bg-old-lace p-1.5 rounded-2xl flex gap-1 border border-almond-silk/50 shadow-inner">
                         <button 
                             type="button"
-                            onClick={() => setProductType('single')}
+                            onClick={() => handleTypeChange('standard')}
                             className={`flex-1 py-3 rounded-xl text-sm font-bold flex items-center justify-center gap-2 transition-all ${
-                                productType === 'single' 
+                                productType === 'standard' 
                                 ? 'bg-white text-slate-900 shadow-sm ring-1 ring-slate-100' 
                                 : 'text-slate-400 hover:text-slate-600'
                             }`}
                         >
-                            <Coffee size={18}/> Standard Item
+                            <Utensils size={18}/> Standard Menu
                         </button>
                         <button 
                             type="button"
-                            onClick={() => {
-                                setProductType('bundle');
-                                if (!formData.unit || formData.unit === 'Set') setFormData({...formData, unit: 'Bundle'});
-                            }}
+                            onClick={() => handleTypeChange('potluck')}
                             className={`flex-1 py-3 rounded-xl text-sm font-bold flex items-center justify-center gap-2 transition-all ${
-                                productType === 'bundle' 
-                                ? 'bg-flag-red text-white shadow-md shadow-flag-red/20' 
+                                productType === 'potluck' 
+                                ? 'bg-slate-900 text-white shadow-md shadow-slate-900/20' 
                                 : 'text-slate-400 hover:text-slate-600'
                             }`}
                         >
-                            <Box size={18}/> Package / Bundle
+                            <Box size={18}/> Potluck Package
                         </button>
                     </div>
 
+                    {/* Standard -> Category Select | Potluck -> Locked Category */}
                     <div className="grid md:grid-cols-2 gap-6">
-                        <Input label="Product Name" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} required placeholder={productType === 'bundle' ? "e.g. Family Feast Bundle" : "e.g. Latte"}/>
+                        <Input label="Product Name" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} required placeholder={productType === 'potluck' ? "e.g. Grand Family Feast" : "e.g. Latte"}/>
                         <div className="space-y-1.5">
                             <label className="text-xs font-bold text-slate-500 uppercase tracking-wide ml-1">Category</label>
-                            <select value={formData.category} onChange={e => setFormData({...formData, category: e.target.value})} className="w-full p-4 bg-old-lace/50 border border-slate-200 rounded-2xl outline-none font-medium font-sans focus:ring-4 focus:ring-flag-red/10 focus:border-flag-red transition">
-                                <option value="" disabled>Select Category</option>
-                                {categories.map(c => <option key={c} value={c}>{c}</option>)}
-                            </select>
+                            {productType === 'potluck' ? (
+                                <div className="w-full p-4 bg-slate-100 border border-slate-200 rounded-2xl font-bold text-slate-500 flex items-center gap-2">
+                                    <Layers size={16} /> Potluck
+                                </div>
+                            ) : (
+                                <select 
+                                    value={formData.category} 
+                                    onChange={e => setFormData({...formData, category: e.target.value})} 
+                                    className="w-full p-4 bg-old-lace/50 border border-slate-200 rounded-2xl outline-none font-medium font-sans focus:ring-4 focus:ring-flag-red/10 focus:border-flag-red transition appearance-none"
+                                >
+                                    <option value="" disabled>Select Category</option>
+                                    {categories.filter(c => c !== 'Potluck').map(c => <option key={c} value={c}>{c}</option>)}
+                                </select>
+                            )}
                         </div>
                     </div>
                     
@@ -245,12 +285,30 @@ const ProductFormModal = ({ isOpen, onClose, initialData, categories, onSubmit }
                         <Input label="Prep Time (Hours)" type="number" min="0" value={formData.prepTime} onChange={e => setFormData({...formData, prepTime: e.target.value})} placeholder="24"/>
                     </div>
 
-                    {/* BUNDLE SPECIFIC SETTINGS */}
-                    {productType === 'bundle' && (
-                        <div className="bg-slate-5 p-5 rounded-2xl border border-slate-200 space-y-4 animate-in fade-in slide-in-from-top-2">
-                            <div className="flex items-center gap-2 mb-2 pb-2 border-b border-slate-200">
+                    {/* STANDARD MODE: Optional Bundle Toggle */}
+                    {productType === 'standard' && (
+                        <div className="flex items-center gap-2 my-2">
+                            <input 
+                                type="checkbox" 
+                                id="isBundle" 
+                                checked={showBundleSettings} 
+                                onChange={(e) => setShowBundleSettings(e.target.checked)}
+                                className="w-4 h-4 text-flag-red rounded focus:ring-flag-red"
+                            />
+                            <label htmlFor="isBundle" className="text-sm font-bold text-slate-500 cursor-pointer">
+                                Is this a Combo/Bundle? (e.g. "3 Pizza Bundle")
+                            </label>
+                        </div>
+                    )}
+
+                    {/* BUNDLE SETTINGS (Visible for Potluck OR when Standard Bundle Toggle is ON) */}
+                    {(productType === 'potluck' || showBundleSettings) && (
+                        <div className={`p-5 rounded-2xl border space-y-4 animate-in fade-in slide-in-from-top-2 ${productType === 'potluck' ? 'bg-slate-900/5 border-slate-200' : 'bg-orange-50 border-orange-100'}`}>
+                            <div className="flex items-center gap-2 mb-2 pb-2 border-b border-slate-200/50">
                                 <Layers size={18} className="text-flag-red"/>
-                                <span className="text-sm font-bold text-slate-800">Package Configuration</span>
+                                <span className="text-sm font-bold text-slate-800">
+                                    {productType === 'potluck' ? "Potluck Configuration" : "Bundle Configuration"}
+                                </span>
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                  <Input 
@@ -259,8 +317,8 @@ const ProductFormModal = ({ isOpen, onClose, initialData, categories, onSubmit }
                                     min="2" 
                                     value={formData.mixLimit} 
                                     onChange={e => setFormData({...formData, mixLimit: e.target.value})} 
-                                    placeholder="How many choices?"
-                                    required={productType === 'bundle'}
+                                    placeholder="Optional"
+                                    required={false}
                                  />
                                  <div className="flex flex-col gap-2 pt-1">
                                     <label className="text-xs font-bold text-slate-500 uppercase tracking-wide ml-1">Constraints</label>
@@ -270,19 +328,19 @@ const ProductFormModal = ({ isOpen, onClose, initialData, categories, onSubmit }
                                     </label>
                                  </div>
                             </div>
-                            <p className="text-[10px] text-slate-400 font-medium italic">
-                                *Set "Items in Bundle" to define how many selections the customer must make (e.g. 3 for a "3 Pizza Bundle").
+                            <p className="text-[10px] text-slate-500 font-medium italic">
+                                *Leave empty if you don't want a fixed limit.
                             </p>
                         </div>
                     )}
 
                     <div className="space-y-4">
                         <Input 
-                            label={productType === 'bundle' ? "Package Choices (Required)" : "Variations (Comma separated)"} 
-                            placeholder={productType === 'bundle' ? "e.g. Pepperoni, Cheese, Hawaiian (REQUIRED)" : "e.g. Small, Large, Less Sugar"} 
+                            label={(productType === 'potluck' || showBundleSettings) ? "Package Choices" : "Variations (Comma separated)"} 
+                            placeholder={(productType === 'potluck' || showBundleSettings) ? "e.g. Pepperoni, Cheese (Leave empty for fixed package)" : "e.g. Small, Large, Less Sugar"} 
                             value={formData.options} 
                             onChange={e => setFormData({...formData, options: e.target.value})}
-                            required={productType === 'bundle'}
+                            required={productType === 'standard' && showBundleSettings} // Only strict for standard bundles
                         />
                         
                         <div className="space-y-1.5">
@@ -317,7 +375,7 @@ export const AdminDashboard = () => {
 
   // STATE MENU
   const [menu, setMenu] = useState([]);
-  const [categories, setCategories] = useState(["Foods", "Desserts", "Coffee", "Potluck", "Others"]); // Added Potluck
+  const [categories, setCategories] = useState(["Foods", "Desserts", "Coffee", "Potluck", "Others"]); // Potluck included by default
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState('grid'); 
   const [searchTerm, setSearchTerm] = useState("");
@@ -508,7 +566,7 @@ export const MENU_ITEMS = ${JSON.stringify(items, null, 2)};
   const openCreateModal = () => {
       setEditingItem({ 
           name: '', description: '', originalPrice: '', price: '', 
-          stock: 50, category: categories[0] || 'Foods', image: '', badge: '', 
+          stock: 50, category: 'Foods', image: '', badge: '', 
           minQty: 1, unit: 'Set', isAvailable: true, options: '', mixLimit: '',
           prepTime: 24, allowDuplicate: true
       });
@@ -880,6 +938,7 @@ export const MENU_ITEMS = ${JSON.stringify(items, null, 2)};
         )}
 
         {/* === GALLERY MANAGER CONTENT === */}
+        {/* ... (Existing Gallery & AI Content remains the same) ... */}
         {activeTab === 'gallery' && (
             <div className="space-y-6">
                 <div className="bg-white/80 backdrop-blur-md p-6 rounded-[2rem] shadow-sm border border-white">
