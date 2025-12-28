@@ -3,14 +3,13 @@ export const CATEGORIES = [
   "Foods",
   "Desserts",
   "Beans",
-  "Other",
-  "test"
+  "Others"
 ];
 
 export const MENU_ITEMS = [
   {
     "id": "102",
-    "name": "Burgers (Mini) - 6 pcs",
+    "name": "Dough boy OG Burgers (Mini) - 6 pcs",
     "description": "Juicy premium beef patties, caramelized onions, and cheddar on soft brioche buns.",
     "originalPrice": 18,
     "price": 15,
@@ -21,14 +20,14 @@ export const MENU_ITEMS = [
     "unit": "Tray",
     "mixLimit": null,
     "prepTime": 2,
-    "allowDuplicate": true
+    "allowDuplicate": false
   },
   {
     "id": "105",
-    "name": "Pasta ",
+    "name": "Pasta Tray",
     "description": "Large tray of al dente pasta. Choose from our signature sauces.",
     "originalPrice": 35,
-    "price": 30,
+    "price": 35,
     "category": "Foods",
     "image": "/images/pasta.webp",
     "badge": "Min 1 Tray",
@@ -36,7 +35,7 @@ export const MENU_ITEMS = [
     "unit": "Tray",
     "mixLimit": null,
     "prepTime": 3,
-    "allowDuplicate": true,
+    "allowDuplicate": false,
     "options": {
       "choices": [
         "Classic Bolognese",
@@ -49,7 +48,7 @@ export const MENU_ITEMS = [
   },
   {
     "id": "106",
-    "name": "Cheese dip",
+    "name": "Cheese Dip",
     "description": "Simple joy: warm bread + cheese dip",
     "originalPrice": 7,
     "price": 7,
@@ -58,13 +57,13 @@ export const MENU_ITEMS = [
     "badge": "Min 5 Sets",
     "minQty": 5,
     "unit": "Sets",
-    "mixLimit": null,
+    "mixLimit": 5,
     "prepTime": 3,
-    "allowDuplicate": true
+    "allowDuplicate": false
   },
   {
     "id": "201",
-    "name": "Classic Waffle",
+    "name": "Classic Waffles Tray",
     "description": "Golden, fluffy Belgian waffles served fresh. Select your desired premium filling.",
     "originalPrice": 25,
     "price": 20,
@@ -75,22 +74,22 @@ export const MENU_ITEMS = [
     "unit": "Tray",
     "mixLimit": null,
     "prepTime": 2,
-    "allowDuplicate": true,
+    "allowDuplicate": false,
     "options": {
+      "title": "Select Filling",
       "choices": [
         "Peanut Butter",
         "Chocolate",
         "Kaya",
         "Planta",
         "Mixed"
-      ],
-      "title": "Select Option"
+      ]
     }
   },
   {
     "id": "202",
-    "name": "Churros",
-    "description": "Crispy fried dough pastry. Choose your dusting. (25pcs)",
+    "name": "Churros Tray (25pcs)",
+    "description": "Crispy fried dough pastry. Choose your dusting.",
     "originalPrice": 15,
     "price": 10,
     "category": "Desserts",
@@ -100,13 +99,14 @@ export const MENU_ITEMS = [
     "unit": "Tray",
     "mixLimit": null,
     "prepTime": 2,
-    "allowDuplicate": true,
+    "allowDuplicate": false,
     "options": {
+      "title": "Select Option",
       "choices": [
         "Original",
-        "Cinnamon"
-      ],
-      "title": "Select Option"
+        "Cinnamon",
+        "Mixed"
+      ]
     }
   },
   {
@@ -115,18 +115,18 @@ export const MENU_ITEMS = [
     "description": "Taste Note：Dark Chocolate, Cane Sugar, Toasted Hazelnut.",
     "originalPrice": 55,
     "price": 42,
-    "category": "Beans",
+    "category": "Coffee",
     "image": "/images/beans.webp",
     "badge": "Min 5 kg",
     "minQty": 5,
     "unit": "kg",
     "mixLimit": null,
-    "prepTime": 1,
+    "prepTime": 24,
     "allowDuplicate": false
   },
   {
     "id": "FY02B",
-    "name": "Sandwich - Egg",
+    "name": "Sandwich Tray - Egg Mayo",
     "description": "Classic creamy Egg Mayo sandwiches. (Approx. 20-24 pcs cut)",
     "originalPrice": 20,
     "price": 15,
@@ -137,11 +137,11 @@ export const MENU_ITEMS = [
     "unit": "Tray",
     "mixLimit": null,
     "prepTime": 1,
-    "allowDuplicate": true
+    "allowDuplicate": false
   },
   {
     "id": "FY02C",
-    "name": "Sandwich - Tuna",
+    "name": "Sandwich Tray - Tuna Mayo",
     "description": "Savory Tuna Mayo sandwiches with fresh lettuce. (Approx. 20-24 pcs cut)",
     "originalPrice": 20,
     "price": 15,
@@ -152,11 +152,11 @@ export const MENU_ITEMS = [
     "unit": "Tray",
     "mixLimit": null,
     "prepTime": 1,
-    "allowDuplicate": true
+    "allowDuplicate": false
   },
   {
     "id": "FY02D",
-    "name": "Sandwich - Mixed egg tuna",
+    "name": "Sandwich Tray - Mixed egg tuna mayo",
     "description": "Assortment, Egg Mayo, and Tuna Mayo sandwiches in one tray.",
     "originalPrice": 20,
     "price": 15,
@@ -167,7 +167,7 @@ export const MENU_ITEMS = [
     "unit": "Tray",
     "mixLimit": null,
     "prepTime": 1,
-    "allowDuplicate": true
+    "allowDuplicate": false
   },
   {
     "id": "FYO1A",
@@ -180,11 +180,10 @@ export const MENU_ITEMS = [
     "badge": "Best Seller",
     "minQty": 1,
     "unit": "Bundle",
-    "mixLimit": null,
+    "mixLimit": 3,
     "prepTime": 2,
     "allowDuplicate": true,
     "options": {
-      "title": "Select Option",
       "choices": [
         "Pepperoni",
         "Honey Garlic",
@@ -192,12 +191,9 @@ export const MENU_ITEMS = [
         "Super Meat",
         "4 Cheese",
         "Tuna Mayo",
-        "Salmon Mentai",
-        "Burger Pizza",
-        "Hawaiian",
-        "Creamy Mushroom Chicken",
         "Mixed"
-      ]
+      ],
+      "title": "Select Option"
     }
   },
   {
@@ -211,7 +207,7 @@ export const MENU_ITEMS = [
     "badge": "Must Try",
     "minQty": 1,
     "unit": "Bundle",
-    "mixLimit": null,
+    "mixLimit": 6,
     "prepTime": 3,
     "allowDuplicate": true,
     "options": {
@@ -222,10 +218,6 @@ export const MENU_ITEMS = [
         "Super Meat",
         "4 Cheese",
         "Tuna Mayo",
-        "Salmon Mentai",
-        "Burger Pizza",
-        "Hawaiian",
-        "Creamy Mushroom Chicken",
         "Mixed"
       ],
       "title": "Select Option"
@@ -241,7 +233,7 @@ export const MENU_ITEMS = [
     "image": "/images/dengdeng1.webp",
     "badge": "Favorit",
     "minQty": 1,
-    "unit": "Bundle",
+    "unit": "Set",
     "mixLimit": null,
     "prepTime": 2,
     "allowDuplicate": false
@@ -256,7 +248,7 @@ export const MENU_ITEMS = [
     "image": "/images/dengdeng.webp",
     "badge": "Party Bundle",
     "minQty": 1,
-    "unit": "Bundle",
+    "unit": "Set",
     "mixLimit": null,
     "prepTime": 2,
     "allowDuplicate": false
@@ -267,7 +259,7 @@ export const MENU_ITEMS = [
     "description": "House Latte Served in a can. Best enjoyed within 7 days when kept chilled.",
     "originalPrice": 3.5,
     "price": 3,
-    "category": "Other",
+    "category": "Coffee",
     "image": "/images/coffeecan.webp",
     "badge": "Min 10 Can",
     "minQty": 10,
@@ -275,49 +267,5 @@ export const MENU_ITEMS = [
     "mixLimit": 1,
     "prepTime": 2,
     "allowDuplicate": false
-  },
-  {
-    "id": "ITEM-1766943580",
-    "name": "Family Feast Bundle",
-    "description": "untuk 10 orang",
-    "originalPrice": 200,
-    "price": 100,
-    "category": "Foods",
-    "image": "/images/makanan1.jpeg",
-    "badge": "must try",
-    "minQty": 1,
-    "unit": "Bundle",
-    "mixLimit": 2,
-    "prepTime": 24,
-    "allowDuplicate": true,
-    "options": {
-      "choices": [
-        "peperoni"
-      ],
-      "title": "Select Option"
-    }
-  },
-  {
-    "id": "ITEM-1766945054",
-    "name": "test package",
-    "description": "untuk 10 orang",
-    "originalPrice": 100,
-    "price": 50,
-    "category": "Foods",
-    "image": "/images/makanan2.jpeg",
-    "badge": "worth it",
-    "minQty": 1,
-    "unit": "Bundle",
-    "mixLimit": 5,
-    "prepTime": 24,
-    "allowDuplicate": true,
-    "options": {
-      "title": "Select Option",
-      "choices": [
-        "basreng",
-        "molen",
-        "mie"
-      ]
-    }
   }
 ];
