@@ -10,7 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@google/genai": "^0.1.0",
+    "@google/genai": "*",
     "@vercel/analytics": "^1.6.1",
     "firebase": "^10.13.0",
     "framer-motion": "^11.0.0",
