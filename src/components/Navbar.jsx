@@ -82,7 +82,7 @@ export const Navbar = ({ openCart, openAI, openBulkInfo, openGallery }) => {
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
         >
           <span className={`whitespace-nowrap transition-all ${scrolled ? 'text-old-lace text-lg' : 'text-flag-red text-2xl md:text-3xl'}`}>THE YARD</span>
-          <span className={`whitespace-nowrap font-sans font-bold px-2 py-0.5 rounded-full ${scrolled ? 'bg-old-lace text-flag-red text-[10px]' : 'bg-flag-red text-old-lace text-xs mt-1'}`}>BULK.</span>
+          <span className={`whitespace-nowrap font-sans font-bold px-2 py-0.5 rounded-full ${scrolled ? 'bg-old-lace text-flag-red text-[10px]' : 'bg-flag-red text-old-lace text-xs mt-1'}`}>BULK ORDER.</span>
         </motion.div>
 
         {/* ACTION BUTTONS */}

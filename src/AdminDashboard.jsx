@@ -1,15 +1,16 @@
 import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { db, storage } from './firebase'; 
-import { collection, onSnapshot, doc, updateDoc, deleteDoc, setDoc, arrayUnion, arrayRemove, getDocs, addDoc } from 'firebase/firestore';
+import { collection, onSnapshot, doc, updateDoc, deleteDoc, setDoc, arrayUnion, arrayRemove, getDocs, addDoc, writeBatch } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { 
     Edit, Save, X, Trash2, Plus, Loader2, Search, 
     LayoutGrid, List, Package, AlertTriangle, CheckCircle, 
     Minus, Ban, Tags, Layers, Download, Image as ImageIcon, Camera, Eye, MoreHorizontal, Upload, Link as LinkIcon,
-    Sparkles, Power, EyeOff, Box, Coffee, Utensils
+    Sparkles, Power, EyeOff, Box, Coffee, Utensils, Move, CheckSquare, Square, Maximize2, ChevronLeft, ChevronRight, GripVertical
 } from 'lucide-react'; 
 import toast from 'react-hot-toast';
 import { Link } from 'react-router-dom';
+import { Reorder, motion, AnimatePresence } from 'framer-motion';
 
 // --- SUB-COMPONENTS ---
 
@@ -394,6 +395,11 @@ export const AdminDashboard = () => {
   const [imageFiles, setImageFiles] = useState([]); 
   const [imagePreviews, setImagePreviews] = useState([]); 
   const [isUploading, setIsUploading] = useState(false);
+  
+  // Gallery Advanced States (Reorder & Batch Delete)
+  const [isReordering, setIsReordering] = useState(false);
+  const [selectedGalleryIds, setSelectedGalleryIds] = useState([]);
+  const [viewingImageIndex, setViewingImageIndex] = useState(null);
 
   // STATE AI
   const [aiSettings, setAiSettings] = useState({ isUnderMaintenance: false });
@@ -443,7 +449,13 @@ export const AdminDashboard = () => {
   useEffect(() => {
     const unsubGallery = onSnapshot(collection(db, "gallery"), (snapshot) => {
         const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        data.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+        // Sort by 'order' (ascending) if available, otherwise by 'createdAt' (descending)
+        data.sort((a, b) => {
+            const orderA = a.order ?? Number.MAX_SAFE_INTEGER;
+            const orderB = b.order ?? Number.MAX_SAFE_INTEGER;
+            if (orderA !== orderB) return orderA - orderB;
+            return (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0);
+        });
         setGallery(data);
     });
     return () => unsubGallery();
@@ -665,6 +677,11 @@ export const MENU_ITEMS = ${JSON.stringify(items, null, 2)};
       }
 
       setIsUploading(true);
+      
+      // Determine new Order ID (Append to end)
+      const currentMaxOrder = gallery.length > 0 ? Math.max(...gallery.map(i => i.order || 0)) : -1;
+      let nextOrder = currentMaxOrder + 1;
+
       try {
           if (editingGalleryItem) {
               // --- EDIT MODE ---
@@ -686,7 +703,7 @@ export const MENU_ITEMS = ${JSON.stringify(items, null, 2)};
           } else {
               // --- CREATE MODE ---
               if (hasFiles) {
-                  const uploadPromises = imageFiles.map(async (file) => {
+                  const uploadPromises = imageFiles.map(async (file, index) => {
                       const storageRef = ref(storage, `gallery/${Date.now()}_${file.name}`);
                       const snapshot = await uploadBytes(storageRef, file);
                       const url = await getDownloadURL(snapshot.ref);
@@ -694,7 +711,8 @@ export const MENU_ITEMS = ${JSON.stringify(items, null, 2)};
                       return addDoc(collection(db, "gallery"), {
                           imageUrl: url,
                           caption: galleryForm.caption, 
-                          createdAt: new Date()
+                          createdAt: new Date(),
+                          order: nextOrder + index // Assign order
                       });
                   });
                   
@@ -704,7 +722,8 @@ export const MENU_ITEMS = ${JSON.stringify(items, null, 2)};
                   await addDoc(collection(db, "gallery"), {
                       imageUrl: galleryForm.imageUrl,
                       caption: galleryForm.caption,
-                      createdAt: new Date()
+                      createdAt: new Date(),
+                      order: nextOrder
                   });
                   toast.success("Photo added!");
               }
@@ -723,13 +742,40 @@ export const MENU_ITEMS = ${JSON.stringify(items, null, 2)};
       }
   };
 
-  const handleDeleteGalleryImage = async (id) => {
-      if(!confirm("Are you sure you want to remove this photo?")) return;
+  const toggleGallerySelection = (id) => {
+      setSelectedGalleryIds(prev => 
+          prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]
+      );
+  };
+
+  const deleteSelectedGalleryItems = async () => {
+      if (!confirm(`Delete ${selectedGalleryIds.length} photos?`)) return;
       try {
-          await deleteDoc(doc(db, "gallery", id));
-          toast.success("Photo removed");
+          const batchDeletePromises = selectedGalleryIds.map(id => deleteDoc(doc(db, "gallery", id)));
+          await Promise.all(batchDeletePromises);
+          setSelectedGalleryIds([]);
+          toast.success("Photos deleted");
       } catch (error) {
-          toast.error("Failed to remove photo");
+          toast.error("Batch delete failed");
+      }
+  };
+
+  const handleReorder = (newOrder) => {
+      setGallery(newOrder);
+  };
+
+  const saveReorder = async () => {
+      try {
+          const batch = writeBatch(db);
+          gallery.forEach((item, index) => {
+              const ref = doc(db, "gallery", item.id);
+              batch.update(ref, { order: index });
+          });
+          await batch.commit();
+          setIsReordering(false);
+          toast.success("Order saved");
+      } catch (error) {
+          toast.error("Failed to save order");
       }
   };
 
@@ -790,7 +836,7 @@ export const MENU_ITEMS = ${JSON.stringify(items, null, 2)};
                             </button>
                         </>
                     )}
-                    {activeTab === 'gallery' && (
+                    {activeTab === 'gallery' && !isReordering && selectedGalleryIds.length === 0 && (
                         <button onClick={() => openGalleryModal(null)} className="flex-grow md:flex-grow-0 px-6 py-3 bg-slate-900 text-white font-bold rounded-2xl hover:bg-flag-red transition flex items-center justify-center gap-2 shadow-lg hover:shadow-flag-red/20 active:scale-95">
                             <Plus size={20}/> Add Photo
                         </button>
@@ -938,41 +984,110 @@ export const MENU_ITEMS = ${JSON.stringify(items, null, 2)};
         )}
 
         {/* === GALLERY MANAGER CONTENT === */}
-        {/* ... (Existing Gallery & AI Content remains the same) ... */}
         {activeTab === 'gallery' && (
             <div className="space-y-6">
-                <div className="bg-white/80 backdrop-blur-md p-6 rounded-[2rem] shadow-sm border border-white">
-                    <h3 className="font-bold text-xl text-slate-800 mb-6 font-heading flex items-center gap-2"><ImageIcon className="text-flag-red"/> Gallery Preview</h3>
+                {/* TOOLBAR */}
+                <div className="bg-white/80 backdrop-blur-md p-4 rounded-[2rem] shadow-sm border border-white flex flex-col sm:flex-row justify-between items-center gap-4 sticky top-4 z-30">
+                    <div className="flex items-center gap-2">
+                        <h3 className="font-bold text-xl text-slate-800 font-heading flex items-center gap-2 px-2">
+                            <ImageIcon className="text-flag-red"/> Gallery <span className="text-sm text-slate-400 font-sans font-medium">({gallery.length})</span>
+                        </h3>
+                    </div>
                     
+                    <div className="flex items-center gap-2 w-full sm:w-auto">
+                        {!isReordering && selectedGalleryIds.length === 0 && (
+                            <button onClick={() => setIsReordering(true)} className="flex-1 sm:flex-none px-4 py-2 bg-white text-slate-600 font-bold rounded-xl border border-slate-200 hover:bg-slate-50 transition shadow-sm flex items-center justify-center gap-2">
+                                <Move size={16}/> Reorder
+                            </button>
+                        )}
+
+                        {isReordering ? (
+                            <div className="flex gap-2 w-full sm:w-auto">
+                                <button onClick={() => setIsReordering(false)} className="flex-1 sm:flex-none px-4 py-2 bg-white text-slate-600 font-bold rounded-xl border border-slate-200 hover:bg-slate-50">Cancel</button>
+                                <button onClick={saveReorder} className="flex-1 sm:flex-none px-6 py-2 bg-slate-900 text-white font-bold rounded-xl hover:bg-flag-red shadow-lg transition">Save Order</button>
+                            </div>
+                        ) : selectedGalleryIds.length > 0 ? (
+                            <div className="flex gap-2 w-full sm:w-auto items-center bg-red-50 px-2 py-1 rounded-2xl border border-red-100">
+                                <span className="text-xs font-bold text-red-600 px-2">{selectedGalleryIds.length} Selected</span>
+                                <button onClick={() => setSelectedGalleryIds([])} className="px-3 py-1.5 bg-white text-slate-500 font-bold rounded-lg text-xs hover:text-slate-800">Cancel</button>
+                                <button onClick={deleteSelectedGalleryItems} className="px-3 py-1.5 bg-red-600 text-white font-bold rounded-lg text-xs hover:bg-red-700 shadow-sm flex items-center gap-1">
+                                    <Trash2 size={12}/> Delete
+                                </button>
+                            </div>
+                        ) : (
+                            <div className="text-xs font-bold text-slate-400 italic px-2 hidden sm:block">
+                                Click photo to Select, Drag to Reorder
+                            </div>
+                        )}
+                    </div>
+                </div>
+
+                <div className="bg-white/80 backdrop-blur-md p-6 rounded-[2rem] shadow-sm border border-white min-h-[50vh]">
                     {gallery.length === 0 ? (
-                        <div className="text-center py-16 text-slate-400 bg-old-lace/50 rounded-3xl border border-dashed border-slate-300">
+                        <div className="text-center py-24 text-slate-400 bg-old-lace/50 rounded-3xl border border-dashed border-slate-300">
                             <Camera size={48} className="mx-auto mb-3 opacity-30"/>
                             <p className="font-medium">No photos in gallery yet. Add some!</p>
                         </div>
+                    ) : isReordering ? (
+                        <Reorder.Group axis="y" values={gallery} onReorder={handleReorder} className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                            {gallery.map(img => (
+                                <Reorder.Item key={img.id} value={img} className="touch-none">
+                                    <div className="relative group rounded-2xl overflow-hidden aspect-square border-2 border-flag-red/20 shadow-lg bg-white cursor-grab active:cursor-grabbing">
+                                        <img src={img.imageUrl} alt="" className="w-full h-full object-cover pointer-events-none opacity-80"/>
+                                        <div className="absolute inset-0 flex items-center justify-center bg-white/20">
+                                            <GripVertical className="text-slate-900 drop-shadow-md" size={32}/>
+                                        </div>
+                                        <div className="absolute top-2 left-2 bg-slate-900 text-white text-[10px] font-bold px-2 py-1 rounded">
+                                            #{img.order ?? '-'}
+                                        </div>
+                                    </div>
+                                </Reorder.Item>
+                            ))}
+                        </Reorder.Group>
                     ) : (
                         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                            {gallery.map(img => (
-                                <div key={img.id} className="relative group rounded-2xl overflow-hidden aspect-square border border-white shadow-sm bg-old-lace">
-                                    <img src={img.imageUrl} alt="" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"/>
-                                    
-                                    {/* Overlay Actions */}
-                                    <div className="absolute inset-0 bg-slate-900/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3 backdrop-blur-sm">
-                                        <button onClick={() => openGalleryModal(img)} className="bg-white text-slate-900 p-3 rounded-full hover:bg-flag-red hover:text-white transition shadow-lg hover:scale-110 active:scale-95" title="Edit Caption">
-                                            <Edit size={18} />
-                                        </button>
-                                        <button onClick={() => handleDeleteGalleryImage(img.id)} className="bg-white text-red-600 p-3 rounded-full hover:bg-red-600 hover:text-white transition shadow-lg hover:scale-110 active:scale-95" title="Delete Photo">
-                                            <Trash2 size={18} />
-                                        </button>
-                                    </div>
-
-                                    {/* Caption Badge */}
-                                    {img.caption && (
-                                        <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/80 via-black/40 to-transparent">
-                                            <p className="text-white text-[10px] font-medium truncate text-center">{img.caption}</p>
+                            {gallery.map((img, index) => {
+                                const isSelected = selectedGalleryIds.includes(img.id);
+                                return (
+                                    <div 
+                                        key={img.id} 
+                                        onClick={() => toggleGallerySelection(img.id)}
+                                        className={`relative group rounded-2xl overflow-hidden aspect-square border transition-all cursor-pointer ${isSelected ? 'border-flag-red ring-4 ring-flag-red/20 shadow-xl scale-95 z-10' : 'border-white shadow-sm hover:shadow-md bg-old-lace'}`}
+                                    >
+                                        <img src={img.imageUrl} alt="" className={`w-full h-full object-cover transition-transform duration-500 ${isSelected ? '' : 'group-hover:scale-110'}`}/>
+                                        
+                                        {/* Selection Overlay */}
+                                        <div className={`absolute inset-0 transition-colors ${isSelected ? 'bg-flag-red/10' : 'bg-transparent group-hover:bg-black/10'}`}>
+                                            <div className="absolute top-3 left-3">
+                                                {isSelected ? (
+                                                    <div className="bg-flag-red text-white rounded-lg p-1 shadow-sm"><CheckSquare size={20}/></div>
+                                                ) : (
+                                                    <div className="bg-black/20 text-white rounded-lg p-1 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity"><Square size={20}/></div>
+                                                )}
+                                            </div>
                                         </div>
-                                    )}
-                                </div>
-                            ))}
+
+                                        {/* Actions (Only visible if NOT selecting) */}
+                                        {selectedGalleryIds.length === 0 && (
+                                            <div className="absolute inset-0 flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity bg-black/40 backdrop-blur-[2px]">
+                                                <button onClick={(e) => { e.stopPropagation(); setViewingImageIndex(index); }} className="p-2 bg-white rounded-full hover:bg-slate-100 text-slate-800 transition shadow-lg active:scale-90" title="View Fullscreen">
+                                                    <Maximize2 size={18}/>
+                                                </button>
+                                                <button onClick={(e) => { e.stopPropagation(); openGalleryModal(img); }} className="p-2 bg-white rounded-full hover:bg-slate-100 text-slate-800 transition shadow-lg active:scale-90" title="Edit Caption">
+                                                    <Edit size={18}/>
+                                                </button>
+                                            </div>
+                                        )}
+
+                                        {/* Caption Badge */}
+                                        {img.caption && (
+                                            <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/80 via-black/40 to-transparent pointer-events-none">
+                                                <p className="text-white text-[10px] font-medium truncate text-center">{img.caption}</p>
+                                            </div>
+                                        )}
+                                    </div>
+                                );
+                            })}
                         </div>
                     )}
                 </div>
@@ -1149,6 +1264,63 @@ export const MENU_ITEMS = ${JSON.stringify(items, null, 2)};
              </form>
           </div>
       )}
+
+      {/* FULLSCREEN LIGHTBOX */}
+      <AnimatePresence>
+        {viewingImageIndex !== null && (
+            <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                <motion.div 
+                    initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                    className="absolute inset-0 bg-black/95 backdrop-blur-md"
+                    onClick={() => setViewingImageIndex(null)}
+                />
+                
+                {/* Navigation Buttons */}
+                <button 
+                    onClick={(e) => { e.stopPropagation(); setViewingImageIndex(prev => (prev - 1 + gallery.length) % gallery.length); }}
+                    className="absolute left-4 top-1/2 -translate-y-1/2 p-4 bg-white/10 hover:bg-white/20 text-white rounded-full z-20 backdrop-blur-md transition-all active:scale-90 hidden md:block"
+                >
+                    <ChevronLeft size={32} />
+                </button>
+                <button 
+                    onClick={(e) => { e.stopPropagation(); setViewingImageIndex(prev => (prev + 1) % gallery.length); }}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 p-4 bg-white/10 hover:bg-white/20 text-white rounded-full z-20 backdrop-blur-md transition-all active:scale-90 hidden md:block"
+                >
+                    <ChevronRight size={32} />
+                </button>
+
+                <motion.div 
+                    key={viewingImageIndex}
+                    initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }}
+                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                    className="relative w-full max-w-5xl flex flex-col items-center pointer-events-none"
+                >
+                    <div className="relative pointer-events-auto rounded-2xl overflow-hidden shadow-2xl ring-1 ring-white/10 bg-black">
+                        <img 
+                            src={gallery[viewingImageIndex]?.imageUrl} 
+                            alt={gallery[viewingImageIndex]?.caption} 
+                            className="max-h-[85vh] w-auto object-contain"
+                        />
+                    </div>
+                    
+                    {/* Caption Bar & Controls */}
+                    <div className="mt-6 pointer-events-auto flex items-center gap-4 animate-in slide-in-from-bottom-4">
+                        {gallery[viewingImageIndex]?.caption && (
+                            <span className="text-white font-medium bg-white/10 px-6 py-3 rounded-xl backdrop-blur-md border border-white/10 shadow-lg">
+                                {gallery[viewingImageIndex]?.caption}
+                            </span>
+                        )}
+                        <button 
+                            onClick={() => setViewingImageIndex(null)}
+                            className="p-3 bg-white text-black rounded-full hover:bg-slate-200 transition-colors shadow-lg active:scale-95"
+                        >
+                            <X size={20} />
+                        </button>
+                    </div>
+                </motion.div>
+            </div>
+        )}
+      </AnimatePresence>
 
     </div>
   );
