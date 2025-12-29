@@ -129,7 +129,7 @@ export const Navbar = ({ openCart, openAI, openBulkInfo, openGallery }) => {
             `}
           >
             <Sparkles size={16} className={`transition-transform group-hover:rotate-12 ${scrolled ? 'text-flag-red' : 'text-pastry-yellow'}`} />
-            <span className="hidden xs:inline">AI PLANNER</span>
+            <span className="hidden xs:inline">ASK AI</span>
           </button>
 
           {/* CART BUTTON */}

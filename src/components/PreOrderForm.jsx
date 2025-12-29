@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { X, Calendar, Clock, User, ChevronLeft, ChevronRight as RightArrow, ChevronRight, MessageSquare } from 'lucide-react';
+import { X, Calendar, Clock, User, ChevronLeft, ChevronRight as RightArrow, ChevronRight, MessageSquare, CheckCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCart } from '../context/CartContext';
 import toast from 'react-hot-toast';
@@ -297,6 +297,14 @@ export const PreOrderForm = ({ onClose }) => {
                     <textarea className="w-full bg-white rounded-2xl pl-12 pr-4 py-4 font-medium text-base text-slate-900 placeholder:text-slate-300 outline-none focus:ring-2 focus:ring-flag-red h-28 resize-none border border-almond-silk/50 shadow-sm appearance-none transition-all" placeholder="Any special requests or allergies?" onChange={e => setFormData({...formData, notes: e.target.value})}>{formData.notes}</textarea>
                  </div>
               </div>
+
+              {/* Reliability Promise */}
+              <div className="flex items-start gap-3 bg-white/50 p-4 rounded-xl border border-slate-100">
+                  <CheckCircle size={18} className="text-green-600 mt-0.5 shrink-0"/>
+                  <p className="text-xs text-slate-500 font-medium leading-relaxed">
+                      We manually review every order to ensure 100% accuracy. You'll receive a direct WhatsApp confirmation shortly after booking.
+                  </p>
+              </div>
             </div>
 
             <div className="p-6 md:p-8 border-t border-almond-silk/50 bg-white/50 backdrop-blur-xl md:rounded-b-[2.5rem] absolute bottom-0 left-0 right-0 z-20 pb-safe-bottom">
@@ -305,7 +313,7 @@ export const PreOrderForm = ({ onClose }) => {
                   <span className="text-flag-red font-black text-3xl tracking-tight">{formatBND(cartTotal)}</span>
               </div>
               <button onClick={handleSend} className="w-full py-4 bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold text-lg rounded-2xl flex justify-center items-center gap-3 transition-all shadow-xl shadow-green-500/20 active:scale-[0.98] hover:shadow-green-500/30">
-                Place Order on WhatsApp <ChevronRight size={20}/>
+                Confirm via WhatsApp <ChevronRight size={20}/>
               </button>
             </div>
           </motion.div>

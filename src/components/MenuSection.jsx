@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, memo } from 'react';
-import { Plus, X, Check, Loader2, Ban, ShoppingBag, Tag, LayoutGrid, List, Search, Minus, ChevronDown, Coffee, Layers, UtensilsCrossed, Info, Clock, Users, Gift, ChefHat, Utensils, Package } from 'lucide-react'; 
+import { Plus, X, Check, Loader2, Ban, ShoppingBag, Tag, LayoutGrid, List, Search, Minus, Layers, UtensilsCrossed, Info, Clock, Users, Package, Utensils } from 'lucide-react'; 
 import { motion, AnimatePresence } from 'framer-motion';
 import { useMenu } from '../hooks/useMenu'; 
 import { useCart } from '../context/CartContext';
@@ -28,7 +28,7 @@ const MenuGridItem = memo(({ item, onAdd, onViewDetails, formatBND }) => {
             whileTap={{ scale: 0.98 }}
             className={`
             group relative bg-white rounded-[1.5rem] md:rounded-[2rem] overflow-hidden 
-            shadow-[0_4px_20px_rgb(0,0,0,0.03)] hover:shadow-[0_8px_30px_rgba(202,34,42,0.1)]
+            shadow-[0_4px_20px_rgb(0,0,0,0.03)] hover:shadow-[0_12px_40px_rgba(202,34,42,0.15)]
             transition-all duration-300 flex flex-col h-full
             border border-slate-50 ring-1 ring-slate-100/50 cursor-pointer
             ${isOutOfStock ? 'opacity-80 grayscale-[0.5]' : ''}
@@ -53,28 +53,29 @@ const MenuGridItem = memo(({ item, onAdd, onViewDetails, formatBND }) => {
                     )}
                 </div>
 
-                {/* Status Overlays - Top Right (Moved from bottom to make room for Add button) */}
+                {/* Status Overlays - Top Right */}
                 {isLowStock && (
                     <div className="absolute top-3 right-3 z-10 bg-orange-50/90 backdrop-blur text-orange-600 text-[10px] font-black px-2.5 py-1 rounded-full shadow-sm border border-orange-100 uppercase tracking-wide pointer-events-none">
                         {item.stock} Left
                     </div>
                 )}
 
-                {/* Bundle Indicator - Bottom Left */}
+                {/* Bundle Indicator - Bottom Left - IMPROVED CLARITY */}
                 {isBundle && (
-                    <div className="absolute bottom-3 left-3 z-10 bg-slate-900/90 backdrop-blur text-white text-[10px] font-bold px-2.5 py-1 rounded-full shadow-sm flex items-center gap-1 pointer-events-none">
-                        <Layers size={12} className="text-pastry-yellow"/> Bundle
+                    <div className="absolute bottom-3 left-3 z-10 bg-slate-900/90 backdrop-blur text-white text-[10px] font-bold px-2.5 py-1 rounded-full shadow-sm flex items-center gap-1.5 pointer-events-none border border-white/10">
+                        <Layers size={12} className="text-pastry-yellow"/> 
+                        <span className="uppercase tracking-wider">Multi-Pack</span>
                     </div>
                 )}
 
-                {/* Quick Add Button - Bottom Right (The "Speed" Feature) */}
+                {/* Quick Add Button - Bottom Right - EMPHASIZED SPEED */}
                 {!isOutOfStock && (
                     <button
                         onClick={(e) => { e.stopPropagation(); onAdd(item); }}
-                        className="absolute bottom-3 right-3 z-20 p-2.5 bg-white rounded-full text-slate-900 shadow-md hover:bg-flag-red hover:text-white transition-all active:scale-90 flex items-center justify-center border border-slate-100"
-                        aria-label="Quick Add"
+                        className="absolute bottom-3 right-3 z-20 w-10 h-10 bg-white rounded-full text-slate-900 shadow-lg hover:bg-flag-red hover:text-white transition-all active:scale-90 flex items-center justify-center border border-slate-100 group-hover:scale-110"
+                        aria-label={`Quick add ${item.name}`}
                     >
-                        <Plus size={20} strokeWidth={3}/>
+                        <Plus size={22} strokeWidth={3}/>
                     </button>
                 )}
 
@@ -164,7 +165,7 @@ const MenuListItem = memo(({ item, onAdd, onViewDetails, formatBND }) => {
                         <h3 className="font-bold text-slate-900 text-base md:text-lg leading-tight font-heading line-clamp-2">{item.name}</h3>
                         {isBundle && (
                             <div className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-slate-500 mt-1">
-                                <Layers size={10} className="text-flag-red"/> Package
+                                <Layers size={10} className="text-flag-red"/> Multi-Pack
                             </div>
                         )}
                     </div>
@@ -184,7 +185,7 @@ const MenuListItem = memo(({ item, onAdd, onViewDetails, formatBND }) => {
                         <button
                             onClick={(e) => { e.stopPropagation(); onAdd(item); }}
                             className="p-2.5 bg-slate-900 rounded-xl text-white shadow-md hover:bg-flag-red transition-all active:scale-90 flex items-center justify-center"
-                            aria-label="Quick Add"
+                            aria-label={`Quick add ${item.name}`}
                         >
                             <Plus size={18} strokeWidth={3}/>
                         </button>
@@ -546,8 +547,8 @@ export const MenuSection = ({ onModalChange }) => {
             </div>
         </div>
 
-        {/* --- MAIN TAB SWITCHER (Improved Mobile Visibility) --- */}
-        <div className="mb-8 px-4 md:px-0 flex justify-center">
+        {/* --- MAIN TAB SWITCHER (Improved Context) --- */}
+        <div className="mb-8 px-4 md:px-0 flex flex-col items-center">
             <div className="bg-white/60 backdrop-blur-md rounded-full p-1.5 border border-white shadow-sm flex items-center w-full max-w-[360px] mx-auto relative isolate overflow-hidden ring-1 ring-slate-200/50">
                 {/* Sliding Background */}
                 <div 
@@ -576,6 +577,11 @@ export const MenuSection = ({ onModalChange }) => {
                     <Package size={16} strokeWidth={2.5} className={`shrink-0 ${activeMenuTab === 'potluck' ? 'text-pastry-yellow' : 'text-slate-400'}`} />
                     <span className={activeMenuTab === 'potluck' ? 'text-old-lace' : ''}>Potluck</span>
                 </button>
+            </div>
+            
+            {/* Helper Text below tabs */}
+            <div className="mt-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                {activeMenuTab === 'alacarte' ? 'Individual Trays & Items' : 'Curated Packages & Bundles'}
             </div>
         </div>
 
