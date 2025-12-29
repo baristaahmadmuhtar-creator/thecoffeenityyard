@@ -574,7 +574,7 @@ export const MenuSection = ({ onModalChange }) => {
                         activeMenuTab === 'potluck' ? 'text-white' : 'text-slate-500 hover:text-slate-900'
                     }`}
                 >
-                    <Package size={16} strokeWidth={2.5} className={`shrink-0 ${activeMenuTab === 'potluck' ? 'text-pastry-yellow' : 'text-slate-400'}`} />
+                    <Package size={16} strokeWidth={2.5} className={`shrink-0 ${activeMenuTab === 'potluck' ? '' : 'text-slate-400'}`} />
                     <span className={activeMenuTab === 'potluck' ? 'text-old-lace' : ''}>Potluck</span>
                 </button>
             </div>
