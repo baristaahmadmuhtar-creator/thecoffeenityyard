@@ -39,7 +39,7 @@ const MenuGridItem = memo(({ item, onAdd, onViewDetails, formatBND }) => {
             <div 
                 className="aspect-[4/3] md:aspect-[4/3] w-full overflow-hidden relative bg-old-lace"
             >
-                {/* Badges */}
+                {/* Badges - Top Left */}
                 <div className="absolute top-3 left-3 z-10 flex flex-col items-start gap-1.5 pointer-events-none">
                     {item.badge && (
                         <div className="bg-white/95 backdrop-blur-md text-slate-900 text-[10px] font-black tracking-widest px-3 py-1.5 rounded-full shadow-sm border border-slate-100 uppercase">
@@ -53,27 +53,38 @@ const MenuGridItem = memo(({ item, onAdd, onViewDetails, formatBND }) => {
                     )}
                 </div>
 
-                {/* Bundle Indicator */}
+                {/* Status Overlays - Top Right (Moved from bottom to make room for Add button) */}
+                {isLowStock && (
+                    <div className="absolute top-3 right-3 z-10 bg-orange-50/90 backdrop-blur text-orange-600 text-[10px] font-black px-2.5 py-1 rounded-full shadow-sm border border-orange-100 uppercase tracking-wide pointer-events-none">
+                        {item.stock} Left
+                    </div>
+                )}
+
+                {/* Bundle Indicator - Bottom Left */}
                 {isBundle && (
                     <div className="absolute bottom-3 left-3 z-10 bg-slate-900/90 backdrop-blur text-white text-[10px] font-bold px-2.5 py-1 rounded-full shadow-sm flex items-center gap-1 pointer-events-none">
                         <Layers size={12} className="text-pastry-yellow"/> Bundle
                     </div>
                 )}
 
-                {/* Status Overlays */}
-                {isLowStock && (
-                        <div className="absolute bottom-3 right-3 z-10 bg-orange-50/90 backdrop-blur text-orange-600 text-[10px] font-black px-2.5 py-1 rounded-full shadow-sm border border-orange-100 uppercase tracking-wide pointer-events-none">
-                            {item.stock} Left
-                        </div>
+                {/* Quick Add Button - Bottom Right (The "Speed" Feature) */}
+                {!isOutOfStock && (
+                    <button
+                        onClick={(e) => { e.stopPropagation(); onAdd(item); }}
+                        className="absolute bottom-3 right-3 z-20 p-2.5 bg-white rounded-full text-slate-900 shadow-md hover:bg-flag-red hover:text-white transition-all active:scale-90 flex items-center justify-center border border-slate-100"
+                        aria-label="Quick Add"
+                    >
+                        <Plus size={20} strokeWidth={3}/>
+                    </button>
                 )}
 
                 {isOutOfStock && (
-                        <div className="absolute inset-0 z-20 bg-white/60 backdrop-blur-[2px] flex flex-col items-center justify-center text-flag-red pointer-events-none">
-                            <div className="bg-white p-3 rounded-full shadow-xl mb-2 border border-slate-100">
-                                <Ban size={24} className="opacity-100 text-flag-red"/>
-                            </div>
-                            <span className="font-black tracking-widest text-xs uppercase bg-white/90 px-4 py-1.5 rounded-full shadow-sm border border-slate-100">Sold Out</span>
+                    <div className="absolute inset-0 z-20 bg-white/60 backdrop-blur-[2px] flex flex-col items-center justify-center text-flag-red pointer-events-none">
+                        <div className="bg-white p-3 rounded-full shadow-xl mb-2 border border-slate-100">
+                            <Ban size={24} className="opacity-100 text-flag-red"/>
                         </div>
+                        <span className="font-black tracking-widest text-xs uppercase bg-white/90 px-4 py-1.5 rounded-full shadow-sm border border-slate-100">Sold Out</span>
+                    </div>
                 )}
 
                 <img 
@@ -167,6 +178,17 @@ const MenuListItem = memo(({ item, onAdd, onViewDetails, formatBND }) => {
                 
                 <div className="mt-auto flex justify-between items-end gap-4">
                     <span className="text-[10px] font-bold text-slate-400 bg-slate-100 px-2 py-1 rounded-md uppercase tracking-wider shrink-0">{item.category}</span>
+                    
+                    {/* Quick Add Button for List View */}
+                    {!isOutOfStock && (
+                        <button
+                            onClick={(e) => { e.stopPropagation(); onAdd(item); }}
+                            className="p-2.5 bg-slate-900 rounded-xl text-white shadow-md hover:bg-flag-red transition-all active:scale-90 flex items-center justify-center"
+                            aria-label="Quick Add"
+                        >
+                            <Plus size={18} strokeWidth={3}/>
+                        </button>
+                    )}
                 </div>
             </div>
         </motion.div>
@@ -551,7 +573,7 @@ export const MenuSection = ({ onModalChange }) => {
                         activeMenuTab === 'potluck' ? 'text-white' : 'text-slate-500 hover:text-slate-900'
                     }`}
                 >
-                    <Package size={16} strokeWidth={2.5} className={`shrink-0 ${activeMenuTab === 'potluck' ? '' : 'text-slate-400'}`} />
+                    <Package size={16} strokeWidth={2.5} className={`shrink-0 ${activeMenuTab === 'potluck' ? 'text-pastry-yellow' : 'text-slate-400'}`} />
                     <span className={activeMenuTab === 'potluck' ? 'text-old-lace' : ''}>Potluck</span>
                 </button>
             </div>

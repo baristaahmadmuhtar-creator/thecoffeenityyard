@@ -67,20 +67,20 @@ export const Hero = ({ openAI, openBulkInfo }) => {
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-flag-red"></span>
                 </span>
                 <span className="text-flag-red text-[10px] md:text-xs font-bold tracking-widest uppercase font-sans">
-                  Bulk & Event Orders, Made Simple
+                  Event Catering • Bulk Order • Delivery
                 </span>
             </motion.div>
 
             <h1 className="text-5xl md:text-7xl lg:text-9xl font-heading font-normal leading-[0.9] tracking-tighter text-slate-900 mb-8">
-                ELEVATE <span className="italic font-serif text-slate-400">your</span> <br/>
+                FEED YOUR <br/>
                 <span className="text-transparent bg-clip-text bg-gradient-to-br from-flag-red to-orange-700 drop-shadow-sm">
-                  GATHERINGS.
+                  CROWD.
                 </span>
             </h1>
 
             <p className="text-slate-500 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed font-medium font-sans px-4">
-                Experience the easiest way to order artisanal food & coffee in bulk. 
-                Perfect for corporate events, parties, and family feasts.
+                The fastest, most reliable way to order artisanal food & coffee for your event. 
+                Instant quotes, volume discounts, and guaranteed quality.
             </p>
           </div>
 
@@ -102,13 +102,13 @@ export const Hero = ({ openAI, openBulkInfo }) => {
                     <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center mb-6 shadow-sm text-flag-red group-hover:scale-110 transition-transform border border-white">
                         <ChefHat size={28} strokeWidth={1.5}/>
                     </div>
-                    <h3 className="text-2xl font-heading text-slate-900 mb-2">How it works?</h3>
+                    <h3 className="text-2xl font-heading text-slate-900 mb-2">Why Bulk Order?</h3>
                     <p className="text-sm text-slate-600 font-medium leading-relaxed max-w-[80%]">
-                        Learn about our seamless bulk ordering process, pricing tiers, and delivery.
+                        Save time and money with volume discounts and reliable delivery for your events.
                     </p>
                 </div>
                 <div className="mt-8 flex items-center text-flag-red font-bold text-xs tracking-wider uppercase">
-                  Read Details <ArrowRight size={14} className="ml-2 group-hover:translate-x-2 transition-transform"/>
+                  See Benefits <ArrowRight size={14} className="ml-2 group-hover:translate-x-2 transition-transform"/>
                 </div>
               </div>
             </motion.div>
@@ -148,7 +148,7 @@ export const Hero = ({ openAI, openBulkInfo }) => {
           {/* Link Skip */}
           <div className="pt-8">
             <a href="#menu" className="inline-flex flex-col items-center text-slate-400 hover:text-flag-red transition-colors group">
-              <span className="text-[10px] font-bold uppercase tracking-widest mb-3">Scroll to Order</span>
+              <span className="text-[10px] font-bold uppercase tracking-widest mb-3">Start Ordering</span>
               <div className="w-6 h-10 border-2 border-slate-300 rounded-full flex justify-center pt-2 group-hover:border-flag-red transition-colors">
                   <motion.div 
                     animate={{ y: [0, 8, 0] }}
